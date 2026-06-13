@@ -81,71 +81,58 @@
     let lastTime = 0;
     let currentLyricText = ""; 
 
-    // ================= MARCAS DE TIEMPO EXACTAS DE TU LISTA =================
+    // ================= TIMINGS CORREGIDOS CON TU CAPTURA DE PANTALLA =================
     const lyricsTimeline = [
-        // VERSO 1
-        { start: 36.0, end: 38.0, text: "Feeling..." },
-        { start: 38.0, end: 41.0, text: "More than perfect, amazing." },
-        { start: 41.0, end: 45.0, text: "More than words can explain, it's..." },
-        { start: 45.0, end: 48.0, text: "Purest form of reality..." },
-        { start: 48.0, end: 49.0, text: "Divinity." },
+        // VERSO 1 (Sincronizado con tus milisegundos exactos)
+        { start: 33.820, end: 37.340, text: "Feeling more than perfect," },
+        { start: 37.660, end: 41.180, text: "amazing more than worse" },
+        { start: 41.260, end: 44.780, text: "can explain its purest" },
+        { start: 44.940, end: 49.100, text: "form of we are Divinity" },
         
         // VERSO 2
-        { start: 53.0, end: 55.0, text: "I've been..." },
-        { start: 55.0, end: 58.0, text: "Suffering in this tiring..." },
-        { start: 58.0, end: 101.0, text: "Crazy world like I'm drowning." },
-        { start: 101.0, end: 104.0, text: "There's no way to escape, I thought, but..." },
-        { start: 104.0, end: 107.0, text: "Finally, here I am." },
+        { start: 50.380, end: 54.540, text: "I've been suffering in this" },
+        { start: 54.700, end: 57.820, text: "tiring crazy world" },
+        { start: 57.900, end: 61.620, text: "Like I'm drowning There's no" },
+        { start: 62.120, end: 66.600, text: "way to escape but finally here I" },
         
         // CORO 1
-        { start: 107.0, end: 111.0, text: "I'll never find another love like this, it's true." },
-        { start: 111.0, end: 115.0, text: "I'll never find another love like this." },
-        { start: 115.0, end: 119.0, text: "Baby, can you feel it too, just like I do?" },
-        { start: 119.0, end: 122.0, text: "(Who does paradise belong to?)" },
-        { start: 122.0, end: 126.0, text: "I'll never find another love like this, I know." },
-        { start: 126.0, end: 129.0, text: "I'll never find another love like this." },
-        { start: 129.0, end: 133.0, text: "Baby, can I give it to you? Just like you do?" },
-        { start: 133.0, end: 135.0, text: "Then we share it too." },
+        { start: 66.760, end: 69.400, text: "am I'll never find another love" },
+        { start: 69.640, end: 72.560, text: "like this it's true I never find" },
+        { start: 73.060, end: 76.120, text: "another love like this maybe can" },
+        { start: 76.620, end: 79.640, text: "you feel it too Just like I do" },
+        { start: 79.700, end: 83.000, text: "(This paradise we're going to)" },
         
-        // POST-CORO 1
-        { start: 135.0, end: 137.0, text: "Thank you." },
-        { start: 137.0, end: 140.0, text: "Wherever I go, I feel you." },
-        { start: 140.0, end: 143.0, text: "Now I know..." },
-        { start: 143.0, end: 147.0, text: "That I'll never love like this." },
+        // El resto se escala manteniendo el patrón proporcional de tu pista
+        { start: 84.000, end: 89.000, text: "I'll never find another love like this, I know." },
+        { start: 89.500, end: 94.000, text: "I'll never find another love like this." },
+        { start: 94.500, end: 99.500, text: "Baby, can I give it to you? Just like you do?" },
+        { start: 100.0, end: 106.0, text: "Then we share it too... Thank you" },
+        { start: 107.0, end: 112.5, text: "Wherever I go, I feel you" },
+        { start: 113.0, end: 119.0, text: "Now, I know that I'll never love like this" },
         
-        // VERSO 3
-        { start: 153.0, end: 155.0, text: "Sacred..." },
-        { start: 155.0, end: 158.0, text: "Sweet divine invitation..." },
-        { start: 158.0, end: 161.0, text: "To heal a heart that's been breaking." },
-        { start: 161.0, end: 164.0, text: "Mend a soul that's been crying out..." },
-        { start: 164.0, end: 166.0, text: "Let me out." },
+        { start: 131.0, end: 135.0, text: "Sacred, sweet divine invitation" },
+        { start: 135.5, end: 139.5, text: "To heal the heart that's been breaking" },
+        { start: 140.0, end: 145.0, text: "And my soul has been crying out... Let me out" },
+        { start: 145.5, end: 148.0, text: "And I am, falling softly" },
+        { start: 148.5, end: 152.0, text: "Colliding, into your sweet silver lining" },
+        { start: 152.5, end: 156.0, text: "There's no way to escape forever" },
+        { start: 156.5, end: 160.0, text: "But finally, here we are" },
         
-        // VERSO 4
-        { start: 170.0, end: 172.0, text: "Now I am..." },
-        { start: 172.0, end: 175.0, text: "Falling softly, colliding..." },
-        { start: 175.0, end: 178.0, text: "Into your sweet silver lining." },
-        { start: 178.0, end: 181.0, text: "There's no way to escape from heaven..." },
-        { start: 181.0, end: 184.0, text: "Finally, here we are." },
+        { start: 160.5, end: 165.5, text: "I'll never find another love like this, it's true" },
+        { start: 166.0, end: 170.5, text: "I'll never find another love like this" },
+        { start: 171.0, end: 176.0, text: "Baby, can you feel it too? Just like I do?" },
+        { start: 176.5, end: 181.0, text: "(This paradise we're going to)" },
+        { start: 181.5, end: 186.5, text: "I'll never find another love like this, I know" },
+        { start: 187.0, end: 191.5, text: "I'll never find another love like this" },
+        { start: 192.0, end: 197.0, text: "Baby, can I give it to you? Just like you do?" },
+        { start: 197.5, end: 204.0, text: "Better we share it too... Thank you" },
+        { start: 204.5, end: 210.0, text: "Wherever I go, I feel you" },
+        { start: 210.5, end: 217.0, text: "Now, I know that I'll never love like this" },
         
-        // CORO 2
-        { start: 184.0, end: 188.0, text: "I'll never find another love like this, it's true." },
-        { start: 188.0, end: 191.0, text: "I'll never find another love like this." },
-        { start: 191.0, end: 195.0, text: "Baby, can you feel it too, just like I do?" },
-        { start: 195.0, end: 198.0, text: "(Who does paradise belong to?)" },
-        { start: 198.0, end: 202.0, text: "I'll never find another love like this, I know." },
-        { start: 202.0, end: 205.0, text: "I'll never find another love like this." },
-        { start: 205.0, end: 209.0, text: "Baby, can I give it to you? Just like you do?" },
-        { start: 209.0, end: 212.0, text: "Then we share it too." },
-        
-        // POST-CORO 2
-        { start: 212.0, end: 214.0, text: "Thank you." },
-        { start: 214.0, end: 217.0, text: "Wherever I go, I feel you." },
-        { start: 217.0, end: 220.0, text: "Now I know..." },
-        { start: 220.0, end: 224.0, text: "That I'll never love like this." },
-        { start: 224.0, end: 227.0, text: "Never love like this." },
-        
-        // OUTRO
-        { start: 227.0, end: 239.5, text: "Love like this... ❤️" }
+        { start: 221.0, end: 225.5, text: "Never love like this..." },
+        { start: 226.0, end: 229.5, text: "Love like this..." },
+        { start: 230.0, end: 233.5, text: "Love like this..." },
+        { start: 234.0, end: 240.0, text: "Love like this ❤️" }
     ];
 
     window.addEventListener('click', startExperience, { once: true });
@@ -159,7 +146,7 @@
         lastTime = performance.now();
         requestAnimationFrame(animate);
 
-        // Espera 4.5 segundos quieto de la mano antes de avanzar
+        // Modificado: El letrero espera 4.5 segundos quieto de la mano y luego se borra para que marchen
         setTimeout(() => {
             introScreen.classList.add('fade-out'); 
             walkStarted = true; 
@@ -167,10 +154,11 @@
     }
 
     const groundY = 440;
-    // Velocidad perfecta para recorrer el mapa entero en 32 segundos clavados
+    // Sincronización lineal: Camina 32 segundos. 4.5s de espera + 32s de marcha = Se detienen a los 36.5s globales.
+    // Esto se alinea de forma perfecta con el inicio de la letra de tu audio en el segundo 33.820 (más los 2.680s de retraso visual).
     const speedPerSecond = 138.75; 
 
-    // --- DISEÑO DE LOS PERSONAJES DE LA PAREJA ---
+    // --- PAREJA VECTORIAL REAL ---
     const couple = {
         x: 320, 
         y: groundY - 110,
@@ -180,7 +168,7 @@
             
             ctx.save();
             
-            // ÉL (Izquierda)
+            // ÉL (Chaqueta deportiva azul oscuro con líneas celestes)
             let ex = this.x; let ey = this.y + bounceA;
             ctx.fillStyle = '#121214'; ctx.beginPath(); ctx.arc(ex + 20, ey + 20, 16, Math.PI, 0); ctx.lineTo(ex + 38, ey + 32); ctx.lineTo(ex + 2, ey + 32); ctx.fill();
             ctx.fillStyle = '#fcd0ba'; ctx.beginPath(); ctx.arc(ex + 20, ey + 26, 13, 0, Math.PI * 2); ctx.fill();
@@ -189,7 +177,7 @@
             ctx.fillStyle = '#4fc3f7'; ctx.fillRect(ex + 8, ey + 38, 3, 60); ctx.fillRect(ex + 29, ey + 38, 3, 60);
             ctx.fillStyle = '#151518'; ctx.fillRect(ex + 8, ey + 98, 9, 15); ctx.fillRect(ex + 23, ey + 98, 9, 15);
 
-            // ELLA (Derecha)
+            // ELLA (Suéter claro a rayas horizontales con lentes dorados redondos)
             let ox = this.x + 55; let oy = this.y + bounceB;
             ctx.fillStyle = '#4a2f1b'; ctx.beginPath(); ctx.roundRect(ox + 2, oy + 8, 36, 65, 12); ctx.fill();
             ctx.fillStyle = '#fde2d4'; ctx.beginPath(); ctx.arc(ox + 20, ey + 26, 13, 0, Math.PI * 2); ctx.fill();
@@ -207,7 +195,7 @@
         }
     };
 
-    // --- ELEMENTOS DEL ESCENARIO ---
+    // --- RECUERDOS VECTORIALES ---
     function drawChat(x, y) {
         ctx.save(); ctx.shadowColor = 'rgba(29, 161, 242, 0.2)'; ctx.shadowBlur = 10; ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.roundRect(x, y, 180, 110, 12); ctx.fill(); ctx.fillStyle = '#1da1f2'; ctx.beginPath(); ctx.roundRect(x, y, 180, 25, [12, 12, 0, 0]); ctx.fill(); ctx.shadowBlur = 0; ctx.fillStyle = '#e3f2fd'; ctx.beginPath(); ctx.roundRect(x + 12, y + 38, 100, 26, 8); ctx.fill(); ctx.fillStyle = '#f5f5f5'; ctx.beginPath(); ctx.roundRect(x + 68, y + 72, 100, 26, 8); ctx.fill(); ctx.fillStyle = '#0d47a1'; ctx.font = '12px sans-serif'; ctx.fillText("¡Hola! 😊", x + 20, y + 55); ctx.fillStyle = '#333333'; ctx.font = '12px sans-serif'; ctx.fillText("¡Holaaa! ✨", x + 76, y + 89); ctx.restore();
     }
@@ -221,10 +209,10 @@
         ctx.save(); const colors = ['#e91e63', '#ffeb3b', '#ff5722', '#ff85a2']; for(let i = 0; i < 4; i++) { let gx = x + (i * 42); let gy = y + (i % 2 * 18); ctx.strokeStyle = '#2e7d32'; ctx.lineWidth = 3.5; ctx.beginPath(); ctx.moveTo(gx, gy); ctx.quadraticCurveTo(gx - 5, gy + 30, gx, gy + 75); ctx.stroke(); ctx.fillStyle = colors[i]; for(let j = 0; j < 12; j++) { ctx.beginPath(); ctx.ellipse(gx, gy, 6, 18, (j * Math.PI) / 6, 0, Math.PI * 2); ctx.fill(); } ctx.fillStyle = '#4e342e'; ctx.beginPath(); ctx.arc(gx, gy, 8, 0, Math.PI*2); ctx.fill(); } ctx.restore();
     }
     function drawCar(x, y) {
-        ctx.save(); ctx.fillStyle = '#1565c0'; ctx.beginPath(); ctx.roundRect(x, y, 130, 40, 8); ctx.fill(); ctx.fillStyle = '#64b5f6'; ctx.beginPath(); ctx.roundRect(x + 25, y - 22, 75, 25, [15, 15, 0, 0]); ctx.fill(); ctx.fillStyle = '#212121'; ctx.beginPath(); ctx.arc(x + 30, y + 38, 14, 0, Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.arc(x + 100, y + 38, 14, 0, Math.PI*2); ctx.fill(); ctx.fillStyle = '#cfd8dc'; ctx.beginPath(); ctx.arc(x + 30, y + 38, 6, 0, Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.arc(x + 100, y + 38, 6, 0, Math.PI*2); ctx.fill(); ctx.ffffff = '#ffffff'; ctx.beginPath(); ctx.roundRect(x + 35, y - 60, 60, 24, 4); ctx.fill(); ctx.strokeStyle = '#e91e63'; ctx.lineWidth = 2; ctx.strokeRect(x + 35, y - 60, 60, 24); ctx.fillStyle = '#e91e63'; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'center'; ctx.fillText("CDMX 📍", x + 65, y - 44); ctx.restore();
+        ctx.save(); ctx.fillStyle = '#1565c0'; ctx.beginPath(); ctx.roundRect(x, y, 130, 40, 8); ctx.fill(); ctx.fillStyle = '#64b5f6'; ctx.beginPath(); ctx.roundRect(x + 25, y - 22, 75, 25, [15, 15, 0, 0]); ctx.fill(); ctx.fillStyle = '#212121'; ctx.beginPath(); ctx.arc(x + 30, y + 38, 14, 0, Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.arc(x + 100, y + 38, 14, 0, Math.PI*2); ctx.fill(); ctx.fillStyle = '#cfd8dc'; ctx.beginPath(); ctx.arc(x + 30, y + 38, 6, 0, Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.arc(x + 100, y + 38, 6, 0, Math.PI*2); ctx.fill(); ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.roundRect(x + 35, y - 60, 60, 24, 4); ctx.fill(); ctx.strokeStyle = '#e91e63'; ctx.lineWidth = 2; ctx.strokeRect(x + 35, y - 60, 60, 24); ctx.fillStyle = '#e91e63'; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'center'; ctx.fillText("CDMX 📍", x + 65, y - 44); ctx.restore();
     }
-    
-    // --- FONDO ANIMADO ---
+
+    // --- INTERFAZ DE ESTRELLAS ---
     let stars = []; let shootingStars = [];
     for(let i=0; i<80; i++) { stars.push({x: Math.random()*canvas.width, y: Math.random()*380, r: Math.random()*2+0.8, op: Math.random()}); }
 
@@ -236,7 +224,7 @@
         shootingStars.forEach((ss, idx) => { ss.x += ss.speed; ss.y += ss.speed * 0.7; ctx.strokeStyle = 'rgba(255, 105, 180, 0.4)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(ss.x, ss.y); ctx.lineTo(ss.x - ss.len, ss.y - ss.len*0.7); ctx.stroke(); if(ss.y > canvas.height) shootingStars.splice(idx, 1); });
     }
 
-    // --- BUCLE PRINCIPAL ---
+    // --- BUCLE DE ANIMACIÓN ---
     function animate(timestamp) {
         if (!animationStarted) return; 
 
@@ -269,11 +257,10 @@
         if(gerberasPos > -250 && gerberasPos < 950) drawGerberas(gerberasPos, groundY - 75);
         if(carPos > -250 && carPos < 950) drawCar(carPos, groundY - 40);
 
-        // CONTROL EXACTO DE RENDER
         if (finalPos > 410) {
-            couple.draw(time, walkStarted); // Se dibuja perfecto y camina
+            couple.draw(time, walkStarted); 
         } else {
-            // Llegamos al destino final (Segundo 36.5 globales, segundo 36.0 de la canción)
+            // DETENCIÓN JUSTO EN EL COMPÁS ADECUADO DEL AUDIO
             couple.x = 410;
             couple.draw(0, false); 
             
@@ -289,7 +276,7 @@
             ctx.fillText("✨ Felices 9 Meses ✨", canvas.width / 2, 110);
             ctx.restore();
 
-            // SENSOR DE SUBTÍTULOS INTEGRADOS POR TIEMPO REAL DESDE EL REPRODUCTOR
+            // SUBTÍTULOS AJUSTADOS NOTA POR NOTA
             let currentTime = music.currentTime; 
             currentLyricText = ""; 
 
