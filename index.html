@@ -159,7 +159,7 @@
         lastTime = performance.now();
         requestAnimationFrame(animate);
 
-        // Intro de 4.5 segundos visuales antes de empezar a caminar
+        // Intro corta de 4.5 segundos antes de avanzar el mapa
         setTimeout(() => {
             introScreen.classList.add('fade-out'); 
             walkStarted = true; 
@@ -169,7 +169,7 @@
     const groundY = 440;
     const speedPerSecond = 138.75; 
 
-    // --- PAREJA AGRUPADA Y REPARADA ---
+    // --- DISEÑO DE PERSONAJES ---
     const couple = {
         x: 320, 
         y: groundY - 110,
@@ -206,7 +206,7 @@
         }
     };
 
-    // --- RECUERDOS (FUNCIONES REPARADAS COMPLETAS) ---
+    // --- ELEMENTOS DEL ESCENARIO (DIBUJOS COMPLETOS) ---
     function drawChat(x, y) {
         ctx.save(); ctx.shadowColor = 'rgba(29, 161, 242, 0.2)'; ctx.shadowBlur = 10; ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.roundRect(x, y, 180, 110, 12); ctx.fill(); ctx.fillStyle = '#1da1f2'; ctx.beginPath(); ctx.roundRect(x, y, 180, 25, [12, 12, 0, 0]); ctx.fill(); ctx.shadowBlur = 0; ctx.fillStyle = '#e3f2fd'; ctx.beginPath(); ctx.roundRect(x + 12, y + 38, 100, 26, 8); ctx.fill(); ctx.fillStyle = '#f5f5f5'; ctx.beginPath(); ctx.roundRect(x + 68, y + 72, 100, 26, 8); ctx.fill(); ctx.fillStyle = '#0d47a1'; ctx.font = '12px sans-serif'; ctx.fillText("¡Hola! 😊", x + 20, y + 55); ctx.fillStyle = '#333333'; ctx.font = '12px sans-serif'; ctx.fillText("¡Holaaa! ✨", x + 76, y + 89); ctx.restore();
     }
@@ -298,12 +298,12 @@
         if(gerberasPos > -250 && gerberasPos < 950) drawGerberas(gerberasPos, groundY - 75);
         if(carPos > -250 && carPos < 950) drawCar(carPos, groundY - 40);
 
-        // AQUÍ REPARÉ EL DIBUJO DE LA PAREJA EN TIEMPO REAL
+        // AQUÍ SE DIBUJA CORRECTAMENTE LA PAREJA EN TODO MOMENTO
         if (finalPos > 410) {
-            couple.draw(time, walkStarted); // Se dibuja y se balancea mientras avanza
+            couple.draw(time, walkStarted); 
         } else {
             couple.x = 410;
-            couple.draw(0, false); // Se detiene quieta al final
+            couple.draw(0, false); 
             
             let heartScale = 1 + Math.sin(time * 0.1) * 0.08;
             ctx.save(); ctx.translate(457, groundY - 130); ctx.scale(heartScale, heartScale);
@@ -317,7 +317,7 @@
             ctx.fillText("✨ Felices 9 Meses ✨", canvas.width / 2, 110);
             ctx.restore();
 
-            // RENDER DE SUBTÍTULOS
+            // RENDER DE SUBTÍTULOS EN TIEMPO REAL
             let currentTime = music.currentTime; 
             currentLyricText = ""; 
 
