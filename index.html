@@ -159,7 +159,7 @@
         lastTime = performance.now();
         requestAnimationFrame(animate);
 
-        // Intro corta de 4.5 segundos antes de avanzar el mapa
+        // Espera 4.5 segundos quieto de la mano antes de avanzar
         setTimeout(() => {
             introScreen.classList.add('fade-out'); 
             walkStarted = true; 
@@ -167,9 +167,10 @@
     }
 
     const groundY = 440;
+    // Velocidad perfecta para recorrer el mapa entero en 32 segundos clavados
     const speedPerSecond = 138.75; 
 
-    // --- DISEÑO DE PERSONAJES ---
+    // --- DISEÑO DE LOS PERSONAJES DE LA PAREJA ---
     const couple = {
         x: 320, 
         y: groundY - 110,
@@ -206,54 +207,24 @@
         }
     };
 
-    // --- ELEMENTOS DEL ESCENARIO (DIBUJOS COMPLETOS) ---
+    // --- ELEMENTOS DEL ESCENARIO ---
     function drawChat(x, y) {
         ctx.save(); ctx.shadowColor = 'rgba(29, 161, 242, 0.2)'; ctx.shadowBlur = 10; ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.roundRect(x, y, 180, 110, 12); ctx.fill(); ctx.fillStyle = '#1da1f2'; ctx.beginPath(); ctx.roundRect(x, y, 180, 25, [12, 12, 0, 0]); ctx.fill(); ctx.shadowBlur = 0; ctx.fillStyle = '#e3f2fd'; ctx.beginPath(); ctx.roundRect(x + 12, y + 38, 100, 26, 8); ctx.fill(); ctx.fillStyle = '#f5f5f5'; ctx.beginPath(); ctx.roundRect(x + 68, y + 72, 100, 26, 8); ctx.fill(); ctx.fillStyle = '#0d47a1'; ctx.font = '12px sans-serif'; ctx.fillText("¡Hola! 😊", x + 20, y + 55); ctx.fillStyle = '#333333'; ctx.font = '12px sans-serif'; ctx.fillText("¡Holaaa! ✨", x + 76, y + 89); ctx.restore();
     }
-    
     function drawMcDonalds(x, y) {
         ctx.save(); ctx.fillStyle = '#8d0c0c'; ctx.beginPath(); ctx.roundRect(x, y, 180, 130, [10, 10, 0, 0]); ctx.fill(); ctx.fillStyle = 'rgba(20,20,30,0.8)'; ctx.fillRect(x + 45, y + 60, 90, 70); ctx.strokeStyle = '#ffcc00'; ctx.lineWidth = 7; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(x + 65, y + 45); ctx.bezierCurveTo(x + 73, y + 15, x + 85, y + 15, x + 90, y + 45); ctx.bezierCurveTo(x + 95, y + 15, x + 107, y + 15, x + 115, y + 45); ctx.stroke(); ctx.restore();
     }
-    
     function drawChimuelo(x, y, t) {
-        ctx.save(); 
-        let floatY = Math.sin(t * 0.06) * 8; 
-        let cy = y - 10 + floatY; 
-        const dragonColor = '#1a1c23'; const dragonShadow = '#0f1015'; 
-        
-        ctx.fillStyle = dragonShadow; 
-        ctx.beginPath(); ctx.moveTo(x + 25, cy + 35); ctx.bezierCurveTo(x - 20, cy, x - 10, cy + 40, x + 20, cy + 50); ctx.fill(); 
-        ctx.beginPath(); ctx.moveTo(x + 45, cy + 35); ctx.bezierCurveTo(x + 90, cy, x + 80, cy + 40, x + 50, cy + 50); ctx.fill(); 
-        
-        ctx.fillStyle = dragonColor; 
-        ctx.beginPath(); ctx.ellipse(x + 35, cy + 45, 20, 25, 0, 0, Math.PI * 2); ctx.fill(); 
-        ctx.fillStyle = dragonShadow; 
-        ctx.beginPath(); ctx.ellipse(x + 23, cy + 65, 6, 12, 0, 0, Math.PI*2); ctx.fill(); 
-        ctx.beginPath(); ctx.ellipse(x + 47, cy + 65, 6, 12, 0, 0, Math.PI*2); ctx.fill(); 
-        
-        ctx.fillStyle = dragonColor; 
-        ctx.beginPath(); ctx.moveTo(x + 15, cy + 10); ctx.bezierCurveTo(x - 15, cy - 25, x - 5, cy - 15, x + 22, cy); ctx.fill(); 
-        ctx.beginPath(); ctx.moveTo(x + 55, cy + 10); ctx.bezierCurveTo(x + 85, cy - 25, x + 75, cy - 15, x + 48, cy); ctx.fill(); 
-        ctx.beginPath(); ctx.moveTo(x + 10, cy + 18); ctx.lineTo(x - 5, cy + 12); ctx.lineTo(x + 12, cy + 24); ctx.moveTo(x + 60, cy + 18); ctx.lineTo(x + 75, cy + 12); ctx.lineTo(x + 58, cy + 24); ctx.fill(); 
-        ctx.beginPath(); ctx.ellipse(x + 35, cy + 18, 28, 20, 0, 0, Math.PI * 2); ctx.fill(); 
-        
-        ctx.fillStyle = '#a6ff00'; 
-        ctx.save(); ctx.translate(x + 21, cy + 16); ctx.rotate(-Math.PI / 10); ctx.beginPath(); ctx.ellipse(0, 0, 9, 12, 0, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = '#0a0d10'; ctx.beginPath(); ctx.ellipse(0, 0, 2.5, 11, 0, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(-3, -4, 2, 0, Math.PI * 2); ctx.fill(); ctx.restore(); 
-        ctx.save(); ctx.translate(x + 49, cy + 16); ctx.rotate(Math.PI / 10); ctx.fillStyle = '#a6ff00'; ctx.beginPath(); ctx.ellipse(0, 0, 9, 12, 0, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = '#0a0d10'; ctx.beginPath(); ctx.ellipse(0, 0, 2.5, 11, 0, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(-3, -4, 2, 0, Math.PI * 2); ctx.fill(); ctx.restore(); 
-        
-        ctx.strokeStyle = dragonShadow; ctx.lineWidth = 2; ctx.lineCap = 'round'; ctx.beginPath(); ctx.arc(x + 35, cy + 24, 8, 0.1, Math.PI - 0.1); ctx.stroke(); 
-        ctx.restore(); 
+        ctx.save(); let floatY = Math.sin(t * 0.06) * 8; let cy = y - 10 + floatY; const dragonColor = '#1a1c23'; const dragonShadow = '#0f1015'; ctx.fillStyle = dragonShadow; ctx.beginPath(); ctx.moveTo(x + 25, cy + 35); ctx.bezierCurveTo(x - 20, cy, x - 10, cy + 40, x + 20, cy + 50); ctx.fill(); ctx.beginPath(); ctx.moveTo(x + 45, cy + 35); ctx.bezierCurveTo(x + 90, cy, x + 80, cy + 40, x + 50, cy + 50); ctx.fill(); ctx.fillStyle = dragonColor; ctx.beginPath(); ctx.ellipse(x + 35, cy + 45, 20, 25, 0, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = dragonShadow; ctx.beginPath(); ctx.ellipse(x + 23, cy + 65, 6, 12, 0, 0, Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.ellipse(x + 47, cy + 65, 6, 12, 0, 0, Math.PI*2); ctx.fill(); ctx.fillStyle = dragonColor; ctx.beginPath(); ctx.moveTo(x + 15, cy + 10); ctx.bezierCurveTo(x - 15, cy - 25, x - 5, cy - 15, x + 22, cy); ctx.fill(); ctx.beginPath(); ctx.moveTo(x + 55, cy + 10); ctx.bezierCurveTo(x + 85, cy - 25, x + 75, cy - 15, x + 48, cy); ctx.fill(); ctx.beginPath(); ctx.moveTo(x + 10, cy + 18); ctx.lineTo(x - 5, cy + 12); ctx.lineTo(x + 12, cy + 24); ctx.moveTo(x + 60, cy + 18); ctx.lineTo(x + 75, cy + 12); ctx.lineTo(x + 58, cy + 24); ctx.fill(); ctx.beginPath(); ctx.ellipse(x + 35, cy + 18, 28, 20, 0, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = '#a6ff00'; ctx.save(); ctx.translate(x + 21, cy + 16); ctx.rotate(-Math.PI / 10); ctx.beginPath(); ctx.ellipse(0, 0, 9, 12, 0, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = '#0a0d10'; ctx.beginPath(); ctx.ellipse(0, 0, 2.5, 11, 0, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(-3, -4, 2, 0, Math.PI * 2); ctx.fill(); ctx.restore(); ctx.save(); ctx.translate(x + 49, cy + 16); ctx.rotate(Math.PI / 10); ctx.fillStyle = '#a6ff00'; ctx.beginPath(); ctx.ellipse(0, 0, 9, 12, 0, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = '#0a0d10'; ctx.beginPath(); ctx.ellipse(0, 0, 2.5, 11, 0, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(-3, -4, 2, 0, Math.PI * 2); ctx.fill(); ctx.restore(); ctx.strokeStyle = dragonShadow; ctx.lineWidth = 2; ctx.lineCap = 'round'; ctx.beginPath(); ctx.arc(x + 35, cy + 24, 8, 0.1, Math.PI - 0.1); ctx.stroke(); ctx.restore();
     }
-    
     function drawGerberas(x, y) {
         ctx.save(); const colors = ['#e91e63', '#ffeb3b', '#ff5722', '#ff85a2']; for(let i = 0; i < 4; i++) { let gx = x + (i * 42); let gy = y + (i % 2 * 18); ctx.strokeStyle = '#2e7d32'; ctx.lineWidth = 3.5; ctx.beginPath(); ctx.moveTo(gx, gy); ctx.quadraticCurveTo(gx - 5, gy + 30, gx, gy + 75); ctx.stroke(); ctx.fillStyle = colors[i]; for(let j = 0; j < 12; j++) { ctx.beginPath(); ctx.ellipse(gx, gy, 6, 18, (j * Math.PI) / 6, 0, Math.PI * 2); ctx.fill(); } ctx.fillStyle = '#4e342e'; ctx.beginPath(); ctx.arc(gx, gy, 8, 0, Math.PI*2); ctx.fill(); } ctx.restore();
     }
-    
     function drawCar(x, y) {
-        ctx.save(); ctx.fillStyle = '#1565c0'; ctx.beginPath(); ctx.roundRect(x, y, 130, 40, 8); ctx.fill(); ctx.fillStyle = '#64b5f6'; ctx.beginPath(); ctx.roundRect(x + 25, y - 22, 75, 25, [15, 15, 0, 0]); ctx.fill(); ctx.fillStyle = '#212121'; ctx.beginPath(); ctx.arc(x + 30, y + 38, 14, 0, Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.arc(x + 100, y + 38, 14, 0, Math.PI*2); ctx.fill(); ctx.fillStyle = '#cfd8dc'; ctx.beginPath(); ctx.arc(x + 30, y + 38, 6, 0, Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.arc(x + 100, y + 38, 6, 0, Math.PI*2); ctx.fill(); ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.roundRect(x + 35, y - 60, 60, 24, 4); ctx.fill(); ctx.strokeStyle = '#e91e63'; ctx.lineWidth = 2; ctx.strokeRect(x + 35, y - 60, 60, 24); ctx.fillStyle = '#e91e63'; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'center'; ctx.fillText("CDMX 📍", x + 65, y - 44); ctx.restore();
+        ctx.save(); ctx.fillStyle = '#1565c0'; ctx.beginPath(); ctx.roundRect(x, y, 130, 40, 8); ctx.fill(); ctx.fillStyle = '#64b5f6'; ctx.beginPath(); ctx.roundRect(x + 25, y - 22, 75, 25, [15, 15, 0, 0]); ctx.fill(); ctx.fillStyle = '#212121'; ctx.beginPath(); ctx.arc(x + 30, y + 38, 14, 0, Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.arc(x + 100, y + 38, 14, 0, Math.PI*2); ctx.fill(); ctx.fillStyle = '#cfd8dc'; ctx.beginPath(); ctx.arc(x + 30, y + 38, 6, 0, Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.arc(x + 100, y + 38, 6, 0, Math.PI*2); ctx.fill(); ctx.ffffff = '#ffffff'; ctx.beginPath(); ctx.roundRect(x + 35, y - 60, 60, 24, 4); ctx.fill(); ctx.strokeStyle = '#e91e63'; ctx.lineWidth = 2; ctx.strokeRect(x + 35, y - 60, 60, 24); ctx.fillStyle = '#e91e63'; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'center'; ctx.fillText("CDMX 📍", x + 65, y - 44); ctx.restore();
     }
     
-    // --- ESTRELLAS ---
+    // --- FONDO ANIMADO ---
     let stars = []; let shootingStars = [];
     for(let i=0; i<80; i++) { stars.push({x: Math.random()*canvas.width, y: Math.random()*380, r: Math.random()*2+0.8, op: Math.random()}); }
 
@@ -265,7 +236,7 @@
         shootingStars.forEach((ss, idx) => { ss.x += ss.speed; ss.y += ss.speed * 0.7; ctx.strokeStyle = 'rgba(255, 105, 180, 0.4)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(ss.x, ss.y); ctx.lineTo(ss.x - ss.len, ss.y - ss.len*0.7); ctx.stroke(); if(ss.y > canvas.height) shootingStars.splice(idx, 1); });
     }
 
-    // --- BUCLE PRINCIPAL DE ANIMACIÓN ---
+    // --- BUCLE PRINCIPAL ---
     function animate(timestamp) {
         if (!animationStarted) return; 
 
@@ -298,10 +269,11 @@
         if(gerberasPos > -250 && gerberasPos < 950) drawGerberas(gerberasPos, groundY - 75);
         if(carPos > -250 && carPos < 950) drawCar(carPos, groundY - 40);
 
-        // AQUÍ SE DIBUJA CORRECTAMENTE LA PAREJA EN TODO MOMENTO
+        // CONTROL EXACTO DE RENDER
         if (finalPos > 410) {
-            couple.draw(time, walkStarted); 
+            couple.draw(time, walkStarted); // Se dibuja perfecto y camina
         } else {
+            // Llegamos al destino final (Segundo 36.5 globales, segundo 36.0 de la canción)
             couple.x = 410;
             couple.draw(0, false); 
             
@@ -317,7 +289,7 @@
             ctx.fillText("✨ Felices 9 Meses ✨", canvas.width / 2, 110);
             ctx.restore();
 
-            // RENDER DE SUBTÍTULOS EN TIEMPO REAL
+            // SENSOR DE SUBTÍTULOS INTEGRADOS POR TIEMPO REAL DESDE EL REPRODUCTOR
             let currentTime = music.currentTime; 
             currentLyricText = ""; 
 
