@@ -31,7 +31,6 @@
             background: linear-gradient(to bottom, #0d0124 0%, #17022b 40%, #050010 100%);
         }
 
-        /* Pantalla de inicio que invita a interactuar */
         #intro-screen {
             position: absolute;
             width: 100%;
@@ -79,101 +78,80 @@
     let walkStarted = false;
     let globalX = 0; 
     let time = 0;
-    let lyricsY = 550; 
+    
+    // Frase activa que se pintará en pantalla al final
+    let currentLyricText = ""; 
 
-    // Al dar clic, inicia la música de fondo inmediatamente con su intro
+    // ================= TIMINGS EXACTOS PARA FUJII KAZE (en segundos) =================
+    // Cada frase aparece exactamente en el segundo indicado al lado.
+    const lyricsTimeline = [
+        { time: 32.0, text: "Feeling, more than perfect, it's amazing" },
+        { time: 36.5, text: "More than words can explain it" },
+        { time: 41.0, text: "Purest form of reality, divinity" },
+        { time: 46.0, text: "I've been suffering in this tiring" },
+        { time: 49.5, text: "Crazy world like I'm drowning" },
+        { time: 53.0, text: "There is no way to escape the thought" },
+        { time: 57.0, text: "But finally, here I am" },
+        { time: 61.0, text: "I'll never find another love like this, it's true" },
+        { time: 66.5, text: "I'll never find another love like this" },
+        { time: 71.5, text: "Baby, can you feel it too? Just like I do?" },
+        { time: 77.0, text: "(This paradise we're going to)" },
+        { time: 82.0, text: "I'll never find another love like this, I know" },
+        { time: 87.5, text: "I'll never find another love like this" },
+        { time: 92.5, text: "Baby, can I give it to you? Just like you do?" },
+        { time: 98.0, text: "Then we'll share it too... Thank you" },
+        { time: 105.0, text: "Wherever I go, I feel you" },
+        { time: 111.0, text: "Now, I know that I'll never love like this" },
+        { time: 118.0, text: "Sacred, sweet divine invitation" },
+        { time: 123.5, text: "To heal the heart that's been breaking" },
+        { time: 128.0, text: "And my soul has been crying out... Let me out" },
+        { time: 133.5, text: "And I am, falling softly" },
+        { time: 136.5, text: "Colliding, into your sweet silver lining" },
+        { time: 140.5, text: "There's no way to escape forever" },
+        { time: 144.5, text: "But finally, here we are" },
+        { time: 148.5, text: "I'll never find another love like this, it's true" },
+        { time: 154.0, text: "I'll never find another love like this" },
+        { time: 159.0, text: "Baby, can you feel it too? Just like I do?" },
+        { time: 164.5, text: "(This paradise we're going to)" },
+        { time: 169.5, text: "I'll never find another love like this, I know" },
+        { time: 175.0, text: "I'll never find another love like this" },
+        { time: 180.0, text: "Baby, can I give it to you? Just like you do?" },
+        { time: 185.5, text: "Better we share it too... Thank you" },
+        { time: 192.5, text: "Wherever I go, I feel you" },
+        { time: 198.5, text: "Now, I know that I'll never love like this" },
+        { time: 206.0, text: "Never love like this..." },
+        { time: 210.0, text: "Love like this..." },
+        { time: 214.0, text: "Love like this..." },
+        { time: 218.0, text: "Love like this ❤️" }
+    ];
+
     window.addEventListener('click', startExperience, { once: true });
     window.addEventListener('touchstart', startExperience, { once: true });
 
     function startExperience() {
-        // 1. Reproducir la música (suena la intro instrumental)
-        music.play().catch(e => console.log("Error de reproducción"));
-
-        // 2. Cambiar el texto a "Así comenzó..." de forma elegante
+        music.play().catch(e => console.log("Audio bloqueado"));
         introScreen.innerHTML = "Así comenzó...";
-        
-        // 3. Encender el motor gráfico del Canvas (las estrellas ya se mueven de fondo)
         animationStarted = true;
         animate();
 
-        // 4. SINCRONIZACIÓN: Esperar exactamente el tiempo de la intro (aprox 4.5 segundos)
-        // para que cuando entre la voz, la pareja empiece a caminar y el texto se desvanezca.
+        // 4.5 segundos exactos de intro instrumental
         setTimeout(() => {
-            introScreen.classList.add('fade-out'); // Desvanece el letrero
-            walkStarted = true; // Arranca el movimiento del escenario
-        }, 4500); // 4500 milisegundos = 4.5 segundos. Ajusta este número si la voz entra un poco antes o después.
+            introScreen.classList.add('fade-out'); 
+            walkStarted = true; 
+        }, 4500); 
     }
 
     const groundY = 440;
-
-    const lyrics = [
-        "Feeling, more than perfect, it's amazing",
-        "More than words can explain it",
-        "Purest form of reality, divinity",
-        "I've been suffering in this tiring",
-        "Crazy world like I'm drowning",
-        "There is no way to escape the thought",
-        "But finally, here I am",
-        "",
-        "I'll never find another love like this, it's true",
-        "I'll never find another love like this",
-        "Baby, can you feel it too?",
-        "Just like I do?",
-        "(This paradise we're going to)",
-        "",
-        "I'll never find another love like this, I know",
-        "I'll never find another love like this",
-        "Baby, can I give it to you?",
-        "Just like you do?",
-        "Then we'll share it too",
-        "Thank you",
-        "",
-        "Wherever I go, I feel you",
-        "Now, I know that I'll never love like this",
-        "",
-        "Sacred, sweet divine invitation",
-        "To heal the heart that's been breaking",
-        "And my soul has been crying out",
-        "Let me out",
-        "And I am, falling softly",
-        "Colliding, into your sweet silver lining",
-        "There's no way to escape forever",
-        "But finally, here we are",
-        "",
-        "I'll never find another love like this, it's true",
-        "I'll never find another love like this",
-        "Baby, can you feel it too?",
-        "Just like I do?",
-        "(This paradise we're going to)",
-        "",
-        "I'll never find another love like this, I know",
-        "I'll never find another love like this",
-        "Baby, can I give it to you?",
-        "Just like you do?",
-        "Better we share it too",
-        "Thank you",
-        "",
-        "Wherever I go, I feel you",
-        "Now, I know that I'll never love like this",
-        "",
-        "Never love like this...",
-        "Love like this...",
-        "Love like this...",
-        "Love like this ❤️"
-    ];
 
     // --- PAREJA ---
     const couple = {
         x: 320, 
         y: groundY - 110,
         draw: function(t, isWalking) {
-            // Si no ha empezado a caminar, el rebote es 0 (están parados de la mano esperando)
             let bounceA = isWalking ? Math.sin(t * 0.08) * 3 : 0;
             let bounceB = isWalking ? Math.sin(t * 0.08 + Math.PI) * 3 : 0;
             
             ctx.save();
-            
-            // ÉL
             let ex = this.x; let ey = this.y + bounceA;
             ctx.fillStyle = '#121214'; ctx.beginPath(); ctx.arc(ex + 20, ey + 20, 16, Math.PI, 0); ctx.lineTo(ex + 38, ey + 32); ctx.lineTo(ex + 2, ey + 32); ctx.fill();
             ctx.fillStyle = '#fcd0ba'; ctx.beginPath(); ctx.arc(ex + 20, ey + 26, 13, 0, Math.PI * 2); ctx.fill();
@@ -182,7 +160,6 @@
             ctx.fillStyle = '#4fc3f7'; ctx.fillRect(ex + 8, ey + 38, 3, 60); ctx.fillRect(ex + 29, ey + 38, 3, 60);
             ctx.fillStyle = '#151518'; ctx.fillRect(ex + 8, ey + 98, 9, 15); ctx.fillRect(ex + 23, ey + 98, 9, 15);
 
-            // ELLA
             let ox = this.x + 55; let oy = this.y + bounceB;
             ctx.fillStyle = '#4a2f1b'; ctx.beginPath(); ctx.roundRect(ox + 2, oy + 8, 36, 65, 12); ctx.fill();
             ctx.fillStyle = '#fde2d4'; ctx.beginPath(); ctx.arc(ox + 20, ey + 26, 13, 0, Math.PI * 2); ctx.fill();
@@ -191,16 +168,14 @@
             ctx.fillStyle = '#ffffff'; ctx.fillRect(ox + 4, oy + 48, 32, 4); ctx.fillRect(ox + 4, oy + 62, 32, 4); ctx.fillRect(ox + 4, oy + 76, 32, 4);
             ctx.fillStyle = '#222'; ctx.fillRect(ox + 8, oy + 98, 8, 15); ctx.fillRect(ox + 24, oy + 98, 8, 15);
 
-            // MANOS AGARRADAS
             ctx.strokeStyle = '#1c2d42'; ctx.lineWidth = 6; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(ex + 30, ey + 60); ctx.lineTo(ex + 45, ey + 75); ctx.stroke();
             ctx.strokeStyle = '#eadecc'; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(ox + 8, oy + 60); ctx.lineTo(ox - 2, oy + 75); ctx.stroke();
             ctx.fillStyle = '#fcd0ba'; ctx.beginPath(); ctx.arc(ex + 41, ((ey + oy)/2) + 74, 5, 0, Math.PI*2); ctx.fill();
-
             ctx.restore();
         }
     };
 
-    // --- RECUERDOS (MISMAS FUNCIONES MEJORADAS) ---
+    // --- ESCENARIOS ---
     function drawChat(x, y) {
         ctx.save(); ctx.shadowColor = 'rgba(29, 161, 242, 0.2)'; ctx.shadowBlur = 10; ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.roundRect(x, y, 180, 110, 12); ctx.fill(); ctx.fillStyle = '#1da1f2'; ctx.beginPath(); ctx.roundRect(x, y, 180, 25, [12, 12, 0, 0]); ctx.fill(); ctx.shadowBlur = 0; ctx.fillStyle = '#e3f2fd'; ctx.beginPath(); ctx.roundRect(x + 12, y + 38, 100, 26, 8); ctx.fill(); ctx.fillStyle = '#f5f5f5'; ctx.beginPath(); ctx.roundRect(x + 68, y + 72, 100, 26, 8); ctx.fill(); ctx.fillStyle = '#0d47a1'; ctx.font = '12px sans-serif'; ctx.fillText("¡Hola! 😊", x + 20, y + 55); ctx.fillStyle = '#333333'; ctx.font = '12px sans-serif'; ctx.fillText("¡Holaaa! ✨", x + 76, y + 89); ctx.restore();
     }
@@ -245,11 +220,11 @@
         });
     }
 
-    // --- VELOCIDAD PARA DURAR EXACTAMENTE 32 SEGUNDOS ---
+    // Velocidad exacta para durar 32 segundos fijos de mapa
     const speed = 2.3125; 
 
     function animate() {
-        if (!animationStarted) return; // No dibuja nada hasta interactuar
+        if (!animationStarted) return; 
         
         time++;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -260,7 +235,6 @@
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)'; ctx.lineWidth = 2;
         ctx.beginPath(); ctx.moveTo(0, groundY); ctx.lineTo(canvas.width, groundY); ctx.stroke();
 
-        // Solo avanza la pantalla si ya terminó la intro musical
         if (walkStarted) {
             globalX += speed;
         }
@@ -279,17 +253,19 @@
         if(carPos > -250 && carPos < 950) drawCar(carPos, groundY - 40);
 
         if (finalPos > 410) {
-            couple.draw(time, walkStarted); // Pasa si están caminando o quietos
+            couple.draw(time, walkStarted);
         } else {
-            // Fin de los 32 segundos de caminata
+            // FIN DEL MAPA (Segundo 32)
             couple.x = 410;
             couple.draw(0, false); 
             
+            // Corazón flotante
             let heartScale = 1 + Math.sin(time * 0.1) * 0.08;
             ctx.save(); ctx.translate(457, groundY - 130); ctx.scale(heartScale, heartScale);
             ctx.fillStyle = '#ff1744'; ctx.font = '34px Arial'; ctx.textAlign = 'center';
             ctx.fillText("❤️", 0, 0); ctx.restore();
 
+            // Títulos fijos
             ctx.fillStyle = '#ffffff'; ctx.font = '300 24px "Montserrat", sans-serif'; ctx.textAlign = 'center';
             ctx.fillText("Te amo", canvas.width / 2, 60);
             ctx.fillStyle = '#ff4081'; ctx.font = 'bold 30px "Montserrat", sans-serif';
@@ -297,31 +273,38 @@
             ctx.fillText("✨ Felices 9 Meses ✨", canvas.width / 2, 110);
             ctx.restore();
 
-            ctx.save();
-            ctx.font = '500 14px "Montserrat", sans-serif';
-            ctx.textAlign = 'center';
-            
-            ctx.beginPath();
-            ctx.rect(0, 140, canvas.width, 160); 
-            ctx.clip();
+            // ================= LÓGICA DE SUBTÍTULOS DINÁMICOS POR TIEMPO REAL =================
+            let currentTime = music.currentTime; // Segundo exacto de la canción en tiempo real
+            currentLyricText = ""; // Por defecto vacío si está en un puente instrumental
 
-            lyricsY -= 0.35; 
-            
-            lyrics.forEach((line, index) => {
-                let lineY = lyricsY + (index * 26);
-                if (lineY > 120 && lineY < 320) {
-                    if(line.includes("love like this") || line.includes("Love like this") || line.includes("divinity")) {
-                        ctx.fillStyle = 'rgba(255, 64, 129, 0.9)';
-                    } else {
-                        ctx.fillStyle = 'rgba(255, 255, 255, 0.65)';
+            // Escanea la línea de tiempo para ver qué frase le corresponde al segundo actual
+            for (let i = 0; i < lyricsTimeline.length; i++) {
+                if (currentTime >= lyricsTimeline[i].time) {
+                    // Si es la última línea o el tiempo actual está antes de la siguiente línea
+                    if (i === lyricsTimeline.length - 1 || currentTime < lyricsTimeline[i + 1].time) {
+                        currentLyricText = lyricsTimeline[i].text;
+                        break;
                     }
-                    ctx.fillText(line, canvas.width / 2, lineY);
                 }
-            });
-            ctx.restore();
-            
-            if (lyricsY < -(lyrics.length * 26)) {
-                lyricsY = 310;
+            }
+
+            // Pintar la frase activa en el lienzo de forma limpia y enfocada
+            if (currentLyricText !== "") {
+                ctx.save();
+                ctx.textAlign = 'center';
+                ctx.font = 'italic 500 17px "Montserrat", sans-serif';
+                
+                // Resalta en rosa los estribillos/palabras clave, y el resto en blanco brillante
+                if(currentLyricText.includes("love like this") || currentLyricText.includes("Love like this") || currentLyricText.includes("divinity")) {
+                    ctx.fillStyle = '#ff4081';
+                    ctx.shadowColor = 'rgba(255, 64, 129, 0.5)'; ctx.shadowBlur = 8;
+                } else {
+                    ctx.fillStyle = '#ffffff';
+                }
+                
+                // Imprime el renglón justo en la zona vacía sobre la pareja
+                ctx.fillText(currentLyricText, canvas.width / 2, 220);
+                ctx.restore();
             }
         }
 
