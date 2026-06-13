@@ -66,26 +66,28 @@
 </div>
 
 <audio id="background-music" loop>
-    <source src="musica.mp3" type="audio/mpeg">
+    <source src="Fujii Kaze - Love Like This (Official Music Video).mp3" type="audio/mpeg">
 </audio>
 
 <script>
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
 
+    // Activa la música con el primer clic en cualquier parte de la pantalla
     document.body.addEventListener('click', () => {
         const music = document.getElementById('background-music');
-        music.play().catch(e => console.log("Audio esperando interacción activa"));
+        music.play().then(() => {
+            console.log("Reproduciendo con éxito");
+        }).catch(e => {
+            console.log("Error al reproducir: Revisa que el archivo esté suelto en GitHub junto al index.html");
+        });
     }, { once: true });
 
     const groundY = 440;
     let globalX = 0; 
     let time = 0;
-    
-    // Control de la letra al final
     let lyricsY = 550; 
 
-    // Letra Oficial Ajustada para "Love Like This" de Fujii Kaze
     const lyrics = [
         "Feeling, more than perfect, it's amazing",
         "More than words can explain it",
@@ -309,7 +311,7 @@
         });
     }
 
-    // --- BUCLE DE ANIMACIÓN (Exactamente 32 segundos de caminata) ---
+    // --- ANIMACIÓN ---
     const speed = 2.3125; 
 
     function animate() {
@@ -340,16 +342,14 @@
         if (finalPos > 410) {
             couple.draw(time);
         } else {
-            // Llegamos al segundo 32: Detención e inicio de créditos de la letra
             couple.x = 410;
             couple.draw(0); 
             
-            // Corazón flotante
             let heartScale = 1 + Math.sin(time * 0.1) * 0.08;
             ctx.save(); ctx.translate(457, groundY - 130); ctx.scale(heartScale, heartScale);
-            ctx.fillStyle = '#ff1744'; ctx.font = '34px Arial'; ctx.textAlign = 'center'; ctx.fillText("❤️", 0, 0); ctx.restore();
+            ctx.fillStyle = '#ff1744'; ctx.font = '34px Arial'; ctx.textAlign = 'center';
+            ctx.fillText("❤️", 0, 0); ctx.restore();
 
-            // Títulos principales
             ctx.fillStyle = '#ffffff'; ctx.font = '300 24px "Montserrat", sans-serif'; ctx.textAlign = 'center';
             ctx.fillText("Te amo", canvas.width / 2, 60);
             ctx.fillStyle = '#ff4081'; ctx.font = 'bold 30px "Montserrat", sans-serif';
@@ -357,7 +357,6 @@
             ctx.fillText("✨ Felices 9 Meses ✨", canvas.width / 2, 110);
             ctx.restore();
 
-            // --- CRÉDITOS FLOTANTES DE LA LETRA (Sincronizado a Fujii Kaze) ---
             ctx.save();
             ctx.font = '500 14px "Montserrat", sans-serif';
             ctx.textAlign = 'center';
@@ -366,13 +365,11 @@
             ctx.rect(0, 140, canvas.width, 160); 
             ctx.clip();
 
-            // Desplazamiento lento ideal para el ritmo de la canción
             lyricsY -= 0.35; 
             
             lyrics.forEach((line, index) => {
                 let lineY = lyricsY + (index * 26);
                 if (lineY > 120 && lineY < 320) {
-                    // Resalta las frases principales en rosa suave
                     if(line.includes("love like this") || line.includes("Love like this") || line.includes("divinity")) {
                         ctx.fillStyle = 'rgba(255, 64, 129, 0.9)';
                     } else {
