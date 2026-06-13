@@ -81,7 +81,7 @@
     let lastTime = 0;
     let currentLyricText = ""; 
 
-    // ================= MARCAS DE TIEMPO DEFINITIVAS Y CORREGIDAS =================
+    // ================= MARCAS DE TIEMPO EXACTAS DE TU LISTA =================
     const lyricsTimeline = [
         // VERSO 1
         { start: 36.0, end: 38.0, text: "Feeling..." },
@@ -144,7 +144,7 @@
         { start: 220.0, end: 224.0, text: "That I'll never love like this." },
         { start: 224.0, end: 227.0, text: "Never love like this." },
         
-        // OUTRO (Bucle final)
+        // OUTRO
         { start: 227.0, end: 239.5, text: "Love like this... ❤️" }
     ];
 
@@ -159,94 +159,14 @@
         lastTime = performance.now();
         requestAnimationFrame(animate);
 
-        // Espera exactamente 36 segundos instrumentales correspondientes a la intro
+        // REAJUSTE DE INTRO: Solo espera 4.5 segundos quieto para arrancar rápido
         setTimeout(() => {
             introScreen.classList.add('fade-out'); 
-            walkStarted = true; 
-        }, 36000); // 36 segundos
+            walkStarted = true; // Arranca la caminata que dura exactamente 32 segundos
+        }, 4500); 
     }
 
     const groundY = 440;
-
-    // --- PAREJA ---
-    const couple = {
-        x: 320, 
-        y: groundY - 110,
-        draw: function(t, isWalking) {
-            let bounceA = isWalking ? Math.sin(t * 0.08) * 3 : 0;
-            let bounceB = isWalking ? Math.sin(t * 0.08 + Math.PI) * 3 : 0;
-            
-            ctx.save();
-            let ex = this.x; let ey = this.y + bounceA;
-            ctx.fillStyle = '#121214'; ctx.beginPath(); ctx.arc(ex + 20, ey + 20, 16, Math.PI, 0); ctx.lineTo(ex + 38, ey + 32); ctx.lineTo(ex + 2, ey + 32); ctx.fill();
-            ctx.fillStyle = '#fcd0ba'; ctx.beginPath(); ctx.arc(ex + 20, ey + 26, 13, 0, Math.PI * 2); ctx.fill();
-            ctx.strokeStyle = '#222'; ctx.lineWidth = 2.5; ctx.strokeRect(ex + 10, ey + 20, 9, 7); ctx.strokeRect(ex + 22, ey + 20, 9, 7); ctx.beginPath(); ctx.moveTo(ex + 19, ey + 23); ctx.lineTo(ex + 22, ey + 23); ctx.stroke();
-            ctx.fillStyle = '#1c2d42'; ctx.beginPath(); ctx.roundRect(ex + 5, ey + 38, 30, 60, [10, 10, 0, 0]); ctx.fill();
-            ctx.fillStyle = '#4fc3f7'; ctx.fillRect(ex + 8, ey + 38, 3, 60); ctx.fillRect(ex + 29, ey + 38, 3, 60);
-            ctx.fillStyle = '#151518'; ctx.fillRect(ex + 8, ey + 98, 9, 15); ctx.fillRect(ex + 23, ey + 98, 9, 15);
-
-            let ox = this.x + 55; let oy = this.y + bounceB;
-            ctx.fillStyle = '#4a2f1b'; ctx.beginPath(); ctx.roundRect(ox + 2, oy + 8, 36, 65, 12); ctx.fill();
-            ctx.fillStyle = '#fde2d4'; ctx.beginPath(); ctx.arc(ox + 20, ey + 26, 13, 0, Math.PI * 2); ctx.fill();
-            ctx.strokeStyle = '#e5a93b'; ctx.lineWidth = 1.8; ctx.beginPath(); ctx.arc(ox + 13, ey + 25, 5, 0, Math.PI*2); ctx.stroke(); ctx.beginPath(); ctx.arc(ox + 27, ey + 25, 5, 0, Math.PI*2); ctx.stroke(); ctx.beginPath(); ctx.moveTo(ox + 18, ey + 25); ctx.lineTo(ox + 22, ey + 25); ctx.stroke();
-            ctx.fillStyle = '#eadecc'; ctx.beginPath(); ctx.roundRect(ox + 4, oy + 38, 32, 60, [8, 8, 0, 0]); ctx.fill();
-            ctx.fillStyle = '#ffffff'; ctx.fillRect(ox + 4, oy + 48, 32, 4); ctx.fillRect(ox + 4, oy + 62, 32, 4); ctx.fillRect(ox + 4, oy + 76, 32, 4);
-            ctx.fillStyle = '#222'; ctx.fillRect(ox + 8, oy + 98, 8, 15); ctx.fillRect(ox + 24, oy + 98, 8, 15);
-
-            ctx.strokeStyle = '#1c2d42'; ctx.lineWidth = 6; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(ex + 30, ey + 60); ctx.lineTo(ex + 45, ey + 75); ctx.stroke();
-            ctx.strokeStyle = '#eadecc'; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(ox + 8, oy + 60); ctx.lineTo(ox - 2, oy + 75); ctx.stroke();
-            ctx.fillStyle = '#fcd0ba'; ctx.beginPath(); ctx.arc(ex + 41, ((ey + oy)/2) + 74, 5, 0, Math.PI*2); ctx.fill();
-            ctx.restore();
-        }
-    };
-
-    // --- RECUERDOS ---
-    function drawChat(x, y) {
-        ctx.save(); ctx.shadowColor = 'rgba(29, 161, 242, 0.2)'; ctx.shadowBlur = 10; ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.roundRect(x, y, 180, 110, 12); ctx.fill(); ctx.fillStyle = '#1da1f2'; ctx.beginPath(); ctx.roundRect(x, y, 180, 25, [12, 12, 0, 0]); ctx.fill(); ctx.shadowBlur = 0; ctx.fillStyle = '#e3f2fd'; ctx.beginPath(); ctx.roundRect(x + 12, y + 38, 100, 26, 8); ctx.fill(); ctx.fillStyle = '#f5f5f5'; ctx.beginPath(); ctx.roundRect(x + 68, y + 72, 100, 26, 8); ctx.fill(); ctx.fillStyle = '#0d47a1'; ctx.font = '12px sans-serif'; ctx.fillText("¡Hola! 😊", x + 20, y + 55); ctx.fillStyle = '#333333'; ctx.font = '12px sans-serif'; ctx.fillText("¡Holaaa! ✨", x + 76, y + 89); ctx.restore();
-    }
-    function drawMcDonalds(x, y) {
-        ctx.save(); ctx.fillStyle = '#8d0c0c'; ctx.beginPath(); ctx.roundRect(x, y, 180, 130, [10, 10, 0, 0]); ctx.fill(); ctx.fillStyle = 'rgba(20,20,30,0.8)'; ctx.fillRect(x + 45, y + 60, 90, 70); ctx.strokeStyle = '#ffcc00'; ctx.lineWidth = 7; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(x + 65, y + 45); ctx.bezierCurveTo(x + 73, y + 15, x + 85, y + 15, x + 90, y + 45); ctx.bezierCurveTo(x + 95, y + 15, x + 107, y + 15, x + 115, y + 45); ctx.stroke(); ctx.restore();
-    }
-    function drawChimuelo(x, y, t) {
-        ctx.save(); let floatY = Math.sin(t * 0.06) * 8; let cy = y - 10 + floatY; const dragonColor = '#1a1c23'; const dragonShadow = '#0f1015'; ctx.fillStyle = dragonShadow; ctx.beginPath(); ctx.moveTo(x + 25, cy + 35); ctx.bezierCurveTo(x - 20, cy, x - 10, cy + 40, x + 20, cy + 50); ctx.fill(); ctx.beginPath(); ctx.moveTo(x + 45, cy + 35); ctx.bezierCurveTo(x + 90, cy, x + 80, cy + 40, x + 50, cy + 50); ctx.fill(); ctx.fillStyle = dragonColor; ctx.beginPath(); ctx.ellipse(x + 35, cy + 45, 20, 25, 0, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = dragonShadow; ctx.beginPath(); ctx.ellipse(x + 23, cy + 65, 6, 12, 0, 0, Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.ellipse(x + 47, cy + 65, 6, 12, 0, 0, Math.PI*2); ctx.fill(); ctx.fillStyle = dragonColor; ctx.beginPath(); ctx.moveTo(x + 15, cy + 10); ctx.bezierCurveTo(x - 15, cy - 25, x - 5, cy - 15, x + 22, cy); ctx.fill(); ctx.beginPath(); ctx.moveTo(x + 55, cy + 10); ctx.bezierCurveTo(x + 85, cy - 25, x + 75, cy - 15, x + 48, cy); ctx.fill(); ctx.beginPath(); ctx.moveTo(x + 10, cy + 18); ctx.lineTo(x - 5, cy + 12); ctx.lineTo(x + 12, cy + 24); ctx.moveTo(x + 60, cy + 18); ctx.lineTo(x + 75, cy + 12); ctx.lineTo(x + 58, cy + 24); ctx.fill(); ctx.beginPath(); ctx.ellipse(x + 35, cy + 18, 28, 20, 0, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = '#a6ff00'; ctx.save(); ctx.translate(x + 21, cy + 16); ctx.rotate(-Math.PI / 10); ctx.beginPath(); ctx.ellipse(0, 0, 9, 12, 0, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = '#0a0d10'; ctx.beginPath(); ctx.ellipse(0, 0, 2.5, 11, 0, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(-3, -4, 2, 0, Math.PI * 2); ctx.fill(); ctx.restore(); ctx.save(); ctx.translate(x + 49, cy + 16); ctx.rotate(Math.PI / 10); ctx.fillStyle = '#a6ff00'; ctx.beginPath(); ctx.ellipse(0, 0, 9, 12, 0, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = '#0a0d10'; ctx.beginPath(); ctx.ellipse(0, 0, 2.5, 11, 0, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(-3, -4, 2, 0, Math.PI * 2); ctx.fill(); ctx.restore(); ctx.strokeStyle = dragonShadow; ctx.lineWidth = 2; ctx.lineCap = 'round'; ctx.beginPath(); ctx.arc(x + 35, cy + 24, 8, 0.1, Math.PI - 0.1); ctx.stroke(); ctx.restore();
-    }
-    function drawGerberas(x, y) {
-        ctx.save(); const colors = ['#e91e63', '#ffeb3b', '#ff5722', '#ff85a2']; for(let i = 0; i < 4; i++) { let gx = x + (i * 42); let gy = y + (i % 2 * 18); ctx.strokeStyle = '#2e7d32'; ctx.lineWidth = 3.5; ctx.beginPath(); ctx.moveTo(gx, gy); ctx.quadraticCurveTo(gx - 5, gy + 30, gx, gy + 75); ctx.stroke(); ctx.fillStyle = colors[i]; for(let j = 0; j < 12; j++) { ctx.beginPath(); ctx.ellipse(gx, gy, 6, 18, (j * Math.PI) / 6, 0, Math.PI * 2); ctx.fill(); } ctx.fillStyle = '#4e342e'; ctx.beginPath(); ctx.arc(gx, gy, 8, 0, Math.PI*2); ctx.fill(); } ctx.restore();
-    }
-    function drawCar(x, y) {
-        ctx.save(); ctx.fillStyle = '#1565c0'; ctx.beginPath(); ctx.roundRect(x, y, 130, 40, 8); ctx.fill(); ctx.fillStyle = '#64b5f6'; ctx.beginPath(); ctx.roundRect(x + 25, y - 22, 75, 25, [15, 15, 0, 0]); ctx.fill(); ctx.fillStyle = '#212121'; ctx.beginPath(); ctx.arc(x + 30, y + 38, 14, 0, Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.arc(x + 100, y + 38, 14, 0, Math.PI*2); ctx.fill(); ctx.fillStyle = '#cfd8dc'; ctx.beginPath(); ctx.arc(x + 30, y + 38, 6, 0, Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.arc(x + 100, y + 38, 6, 0, Math.PI*2); ctx.fill(); ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.roundRect(x + 35, y - 60, 60, 24, 4); ctx.fill(); ctx.strokeStyle = '#e91e63'; ctx.lineWidth = 2; ctx.strokeRect(x + 35, y - 60, 60, 24); ctx.fillStyle = '#e91e63'; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'center'; ctx.fillText("CDMX 📍", x + 65, y - 44); ctx.restore();
-    }
-
-    // --- FONDO ---
-    let stars = []; let shootingStars = [];
-    for(let i=0; i<80; i++) { stars.push({x: Math.random()*canvas.width, y: Math.random()*380, r: Math.random()*2+0.8, op: Math.random()}); }
-
-    function drawSpecialBackground() {
-        let moonGrad = ctx.createRadialGradient(730, 140, 10, 730, 140, 70);
-        moonGrad.addColorStop(0, '#fffde7'); moonGrad.addColorStop(0.2, '#fff9c4'); moonGrad.addColorStop(1, 'rgba(23, 2, 43, 0)');
-        ctx.fillStyle = moonGrad; ctx.beginPath(); ctx.arc(730, 140, 70, 0, Math.PI*2); ctx.fill();
-
-        let nebula = ctx.createRadialGradient(250, 180, 50, 250, 180, 280);
-        nebula.addColorStop(0, 'rgba(233, 30, 99, 0.08)'); nebula.addColorStop(0.5, 'rgba(147, 112, 219, 0.04)'); nebula.addColorStop(1, 'rgba(0,0,0,0)');
-        ctx.fillStyle = nebula; ctx.fillRect(0, 0, canvas.width, 400);
-
-        stars.forEach(s => {
-            s.op += (Math.random() - 0.5) * 0.04;
-            if(s.op < 0.2) s.op = 0.2; if(s.op > 1) s.op = 1;
-            ctx.fillStyle = `rgba(255, 255, 255, ${s.op})`; ctx.fillRect(s.x, s.y, s.r, s.r);
-        });
-
-        if(Math.random() < 0.015) { shootingStars.push({x: Math.random()*(canvas.width - 200), y: 0, len: Math.random()*50+30, speed: Math.random()*4+4}); }
-        shootingStars.forEach((ss, idx) => {
-            ss.x += ss.speed; ss.y += ss.speed * 0.7;
-            ctx.strokeStyle = 'rgba(255, 105, 180, 0.4)'; ctx.lineWidth = 2;
-            ctx.beginPath(); ctx.moveTo(ss.x, ss.y); ctx.lineTo(ss.x - ss.len, ss.y - ss.len*0.7); ctx.stroke();
-            if(ss.y > canvas.height) shootingStars.splice(idx, 1);
-        });
-    }
-
-    // Delta Time calibrado para durar exactamente 32 segundos de caminata activa
-    // (Desde el segundo 36 hasta el segundo 68 de la canción)
     const speedPerSecond = 138.75; 
 
     function animate(timestamp) {
@@ -284,7 +204,7 @@
         if (finalPos > 410) {
             couple.draw(time, walkStarted);
         } else {
-            // DETENCIÓN FINAL EN EL SEGUNDO 32 DE CAMINATA (Segundo 68 de la canción)
+            // DETENCIÓN JUSTO EN EL SEGUNDO 36.5 DE LA EXPERIENCIA (Segundo 36.0 del audio)
             couple.x = 410;
             couple.draw(0, false); 
             
@@ -300,7 +220,7 @@
             ctx.fillText("✨ Felices 9 Meses ✨", canvas.width / 2, 110);
             ctx.restore();
 
-            // LECTURA DINÁMICA DE SUBTÍTULOS POR TIEMPO REAL
+            // SINCRO PERFECTA: Lee el tiempo real del reproductor
             let currentTime = music.currentTime; 
             currentLyricText = ""; 
 
@@ -331,6 +251,23 @@
         requestAnimationFrame(animate);
     }
 
+    // --- FUNCIONES GRÁFICAS MISMAS MEJORADAS ---
+    function drawChat(x, y) { ctx.save(); ctx.shadowColor = 'rgba(29, 161, 242, 0.2)'; ctx.shadowBlur = 10; ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.roundRect(x, y, 180, 110, 12); ctx.fill(); ctx.fillStyle = '#1da1f2'; ctx.beginPath(); ctx.roundRect(x, y, 180, 25, [12, 12, 0, 0]); ctx.fill(); ctx.shadowBlur = 0; ctx.fillStyle = '#e3f2fd'; ctx.beginPath(); ctx.roundRect(x + 12, y + 38, 100, 26, 8); ctx.fill(); ctx.fillStyle = '#f5f5f5'; ctx.beginPath(); ctx.roundRect(x + 68, y + 72, 100, 26, 8); ctx.fill(); ctx.fillStyle = '#0d47a1'; ctx.font = '12px sans-serif'; ctx.fillText("¡Hola! 😊", x + 20, y + 55); ctx.fillStyle = '#333333'; ctx.font = '12px sans-serif'; ctx.fillText("¡Holaaa! ✨", x + 76, y + 89); ctx.restore(); }
+    function drawMcDonalds(x, y) { ctx.save(); ctx.fillStyle = '#8d0c0c'; ctx.beginPath(); ctx.roundRect(x, y, 180, 130, [10, 10, 0, 0]); ctx.fill(); ctx.fillStyle = 'rgba(20,20,30,0.8)'; ctx.fillRect(x + 45, y + 60, 90, 70); ctx.strokeStyle = '#ffcc00'; ctx.lineWidth = 7; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(x + 65, y + 45); ctx.bezierCurveTo(x + 73, y + 15, x + 85, y + 15, x + 90, y + 45); ctx.bezierCurveTo(x + 95, y + 15, x + 107, y + 15, x + 115, y + 45); ctx.stroke(); ctx.restore(); }
+    function drawChimuelo(x, y, t) { ctx.save(); let floatY = Math.sin(t * 0.06) * 8; let cy = y - 10 + floatY; const dragonColor = '#1a1c23'; const dragonShadow = '#0f1015'; ctx.fillStyle = dragonShadow; ctx.beginPath(); ctx.moveTo(x + 25, cy + 35); ctx.bezierCurveTo(x - 20, cy, x - 10, cy + 40, x + 20, cy + 50); ctx.fill(); ctx.beginPath(); ctx.moveTo(x + 45, cy + 35); ctx.bezierCurveTo(x + 90, cy, x + 80, cy + 40, x + 50, cy + 50); ctx.fill(); ctx.fillStyle = dragonColor; ctx.beginPath(); ctx.ellipse(x + 35, cy + 45, 20, 25, 0, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = dragonShadow; ctx.beginPath(); ctx.ellipse(x + 23, cy + 65, 6, 12, 0, 0, Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.ellipse(x + 47, cy + 65, 6, 12, 0, 0, Math.PI*2); ctx.fill(); ctx.fillStyle = dragonColor; ctx.beginPath(); ctx.moveTo(x + 15, cy + 10); ctx.bezierCurveTo(x - 15, cy - 25, x - 5, cy - 15, x + 22, cy); ctx.fill(); ctx.beginPath(); ctx.moveTo(x + 55, cy + 10); ctx.bezierCurveTo(x + 85, cy - 25, x + 75, cy - 15, x + 48, cy); ctx.fill(); ctx.beginPath(); ctx.moveTo(x + 10, cy + 18); ctx.lineTo(x - 5, cy + 12); ctx.lineTo(x + 12, cy + 24); ctx.moveTo(x + 60, cy + 18); ctx.lineTo(x + 75, cy + 12); ctx.lineTo(x + 58, cy + 24); ctx.fill(); ctx.beginPath(); ctx.ellipse(x + 35, cy + 18, 28, 20, 0, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = '#a6ff00'; ctx.save(); ctx.translate(x + 21, cy + 16); ctx.rotate(-Math.PI / 10); ctx.beginPath(); ctx.ellipse(0, 0, 9, 12, 0, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = '#0a0d10'; ctx.beginPath(); ctx.ellipse(0, 0, 2.5, 11, 0, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(-3, -4, 2, 0, Math.PI * 2); ctx.fill(); ctx.restore(); ctx.save(); ctx.translate(x + 49, cy + 16); ctx.rotate(Math.PI / 10); ctx.fillStyle = '#a6ff00'; ctx.beginPath(); ctx.ellipse(0, 0, 9, 12, 0, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = '#0a0d10'; ctx.beginPath(); ctx.ellipse(0, 0, 2.5, 11, 0, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(-3, -4, 2, 0, Math.PI * 2); ctx.fill(); ctx.restore(); ctx.strokeStyle = dragonShadow; ctx.lineWidth = 2; ctx.lineCap = 'round'; ctx.beginPath(); ctx.arc(x + 35, cy + 24, 8, 0.1, Math.PI - 0.1); ctx.stroke(); ctx.restore(); }
+    function drawGerberas(x, y) { ctx.save(); const colors = ['#e91e63', '#ffeb3b', '#ff5722', '#ff85a2']; for(let i = 0; i < 4; i++) { let gx = x + (i * 42); let gy = y + (i % 2 * 18); ctx.strokeStyle = '#2e7d32'; ctx.lineWidth = 3.5; ctx.beginPath(); ctx.moveTo(gx, gy); ctx.quadraticCurveTo(gx - 5, gy + 30, gx, gy + 75); ctx.stroke(); ctx.fillStyle = colors[i]; for(let j = 0; j < 12; j++) { ctx.beginPath(); ctx.ellipse(gx, gy, 6, 18, (j * Math.PI) / 6, 0, Math.PI * 2); ctx.fill(); } ctx.fillStyle = '#4e342e'; ctx.beginPath(); ctx.arc(gx, gy, 8, 0, Math.PI*2); ctx.fill(); } ctx.restore(); }
+    function drawCar(x, y) { ctx.save(); ctx.fillStyle = '#1565c0'; ctx.beginPath(); ctx.roundRect(x, y, 130, 40, 8); ctx.fill(); ctx.fillStyle = '#64b5f6'; ctx.beginPath(); ctx.roundRect(x + 25, y - 22, 75, 25, [15, 15, 0, 0]); ctx.fill(); ctx.fillStyle = '#212121'; ctx.beginPath(); ctx.arc(x + 30, y + 38, 14, 0, Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.arc(x + 100, y + 38, 14, 0, Math.PI*2); ctx.fill(); ctx.fillStyle = '#cfd8dc'; ctx.beginPath(); ctx.arc(x + 30, y + 38, 6, 0, Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.arc(x + 100, y + 38, 6, 0, Math.PI*2); ctx.fill(); ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.roundRect(x + 35, y - 60, 60, 24, 4); ctx.fill(); ctx.strokeStyle = '#e91e63'; ctx.lineWidth = 2; ctx.strokeRect(x + 35, y - 60, 60, 24); ctx.fillStyle = '#e91e63'; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'center'; ctx.fillText("CDMX 📍", x + 65, y - 44); ctx.restore(); }
+    
+    let stars = []; let shootingStars = [];
+    for(let i=0; i<80; i++) { stars.push({x: Math.random()*canvas.width, y: Math.random()*380, r: Math.random()*2+0.8, op: Math.random()}); }
+
+    function drawSpecialBackground() {
+        let moonGrad = ctx.createRadialGradient(730, 140, 10, 730, 140, 70); moonGrad.addColorStop(0, '#fffde7'); moonGrad.addColorStop(0.2, '#fff9c4'); moonGrad.addColorStop(1, 'rgba(23, 2, 43, 0)'); ctx.fillStyle = moonGrad; ctx.beginPath(); ctx.arc(730, 140, 70, 0, Math.PI*2); ctx.fill();
+        let nebula = ctx.createRadialGradient(250, 180, 50, 250, 180, 280); nebula.addColorStop(0, 'rgba(233, 30, 99, 0.08)'); nebula.addColorStop(0.5, 'rgba(147, 112, 219, 0.04)'); nebula.addColorStop(1, 'rgba(0,0,0,0)'); ctx.fillStyle = nebula; ctx.fillRect(0, 0, canvas.width, 400);
+        stars.forEach(s => { s.op += (Math.random() - 0.5) * 0.04; if(s.op < 0.2) s.op = 0.2; if(s.op > 1) s.op = 1; ctx.fillStyle = `rgba(255, 255, 255, ${s.op})`; ctx.fillRect(s.x, s.y, s.r, s.r); });
+        if(Math.random() < 0.015) { shootingStars.push({x: Math.random()*(canvas.width - 200), y: 0, len: Math.random()*50+30, speed: Math.random()*4+4}); }
+        shootingStars.forEach((ss, idx) => { ss.x += ss.speed; ss.y += ss.speed * 0.7; ctx.strokeStyle = 'rgba(255, 105, 180, 0.4)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(ss.x, ss.y); ctx.lineTo(ss.x - ss.len, ss.y - ss.len*0.7); ctx.stroke(); if(ss.y > canvas.height) shootingStars.splice(idx, 1); });
+    }
 </script>
 </body>
 </html>
