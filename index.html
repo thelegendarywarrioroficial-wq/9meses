@@ -79,11 +79,11 @@
     let globalX = 0; 
     let time = 0;
     
-    // Frase activa que se pintará en pantalla al final
+    // Variables para controlar el tiempo real (Delta Time)
+    let lastTime = 0;
     let currentLyricText = ""; 
 
-    // ================= TIMINGS EXACTOS PARA FUJII KAZE (en segundos) =================
-    // Cada frase aparece exactamente en el segundo indicado al lado.
+    // ================= TIMINGS EXACTOS PARA FUJII KAZE =================
     const lyricsTimeline = [
         { time: 32.0, text: "Feeling, more than perfect, it's amazing" },
         { time: 36.5, text: "More than words can explain it" },
@@ -132,9 +132,12 @@
         music.play().catch(e => console.log("Audio bloqueado"));
         introScreen.innerHTML = "Así comenzó...";
         animationStarted = true;
-        animate();
+        
+        // Captura el milisegundo exacto inicial antes de arrancar el loop
+        lastTime = performance.now();
+        requestAnimationFrame(animate);
 
-        // 4.5 segundos exactos de intro instrumental
+        // 4.5 segundos de intro instrumental
         setTimeout(() => {
             introScreen.classList.add('fade-out'); 
             walkStarted = true; 
@@ -175,7 +178,7 @@
         }
     };
 
-    // --- ESCENARIOS ---
+    // --- RECUERDOS ---
     function drawChat(x, y) {
         ctx.save(); ctx.shadowColor = 'rgba(29, 161, 242, 0.2)'; ctx.shadowBlur = 10; ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.roundRect(x, y, 180, 110, 12); ctx.fill(); ctx.fillStyle = '#1da1f2'; ctx.beginPath(); ctx.roundRect(x, y, 180, 25, [12, 12, 0, 0]); ctx.fill(); ctx.shadowBlur = 0; ctx.fillStyle = '#e3f2fd'; ctx.beginPath(); ctx.roundRect(x + 12, y + 38, 100, 26, 8); ctx.fill(); ctx.fillStyle = '#f5f5f5'; ctx.beginPath(); ctx.roundRect(x + 68, y + 72, 100, 26, 8); ctx.fill(); ctx.fillStyle = '#0d47a1'; ctx.font = '12px sans-serif'; ctx.fillText("¡Hola! 😊", x + 20, y + 55); ctx.fillStyle = '#333333'; ctx.font = '12px sans-serif'; ctx.fillText("¡Holaaa! ✨", x + 76, y + 89); ctx.restore();
     }
@@ -220,23 +223,35 @@
         });
     }
 
-    // Velocidad exacta para durar 32 segundos fijos de mapa
-    const speed = 2.3125; 
+    // ================= MATEMÁTICAS BASADAS EN TIEMPO REAL (DELTA TIME) =================
+    // Distancia total del mapa: 4440 píxeles.
+    // Duración deseada exactísima: 32 segundos.
+    // Velocidad constante por segundo: 4440 / 32 = 138.75 píxeles por segundo real.
+    const speedPerSecond = 138.75; 
 
-    function animate() {
+    function animate(timestamp) {
         if (!animationStarted) return; 
-        
-        time++;
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+        // Calcular los milisegundos reales que pasaron entre este cuadro y el anterior
+        let dt = (timestamp - lastTime) / 1000; // Lo convertimos a fracciones de segundo
+        lastTime = timestamp;
+
+        // Evitar saltos bruscos si cambias de pestaña
+        if (dt > 0.1) dt = 0.1; 
+
+        // El contador "time" de animación interna se escala para mantener la física constante a 60 FPS virtuales
+        time += dt * 60; 
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
         drawSpecialBackground();
 
         ctx.fillStyle = '#0a0518'; ctx.fillRect(0, groundY, canvas.width, canvas.height - groundY);
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)'; ctx.lineWidth = 2;
         ctx.beginPath(); ctx.moveTo(0, groundY); ctx.lineTo(canvas.width, groundY); ctx.stroke();
 
+        // Mover el mapa usando la velocidad multiplicada por el tiempo real transcurrido
         if (walkStarted) {
-            globalX += speed;
+            globalX += speedPerSecond * dt;
         }
 
         let chatPos = 950 - globalX;
@@ -255,17 +270,15 @@
         if (finalPos > 410) {
             couple.draw(time, walkStarted);
         } else {
-            // FIN DEL MAPA (Segundo 32)
+            // DETENCIÓN ABSOLUTA EXACTAMENTE EN EL SEGUNDO 32
             couple.x = 410;
             couple.draw(0, false); 
             
-            // Corazón flotante
             let heartScale = 1 + Math.sin(time * 0.1) * 0.08;
             ctx.save(); ctx.translate(457, groundY - 130); ctx.scale(heartScale, heartScale);
             ctx.fillStyle = '#ff1744'; ctx.font = '34px Arial'; ctx.textAlign = 'center';
             ctx.fillText("❤️", 0, 0); ctx.restore();
 
-            // Títulos fijos
             ctx.fillStyle = '#ffffff'; ctx.font = '300 24px "Montserrat", sans-serif'; ctx.textAlign = 'center';
             ctx.fillText("Te amo", canvas.width / 2, 60);
             ctx.fillStyle = '#ff4081'; ctx.font = 'bold 30px "Montserrat", sans-serif';
@@ -273,14 +286,12 @@
             ctx.fillText("✨ Felices 9 Meses ✨", canvas.width / 2, 110);
             ctx.restore();
 
-            // ================= LÓGICA DE SUBTÍTULOS DINÁMICOS POR TIEMPO REAL =================
-            let currentTime = music.currentTime; // Segundo exacto de la canción en tiempo real
-            currentLyricText = ""; // Por defecto vacío si está en un puente instrumental
+            // Sincronización impecable de subtítulos leyendo los segundos del reproductor de audio
+            let currentTime = music.currentTime; 
+            currentLyricText = ""; 
 
-            // Escanea la línea de tiempo para ver qué frase le corresponde al segundo actual
             for (let i = 0; i < lyricsTimeline.length; i++) {
                 if (currentTime >= lyricsTimeline[i].time) {
-                    // Si es la última línea o el tiempo actual está antes de la siguiente línea
                     if (i === lyricsTimeline.length - 1 || currentTime < lyricsTimeline[i + 1].time) {
                         currentLyricText = lyricsTimeline[i].text;
                         break;
@@ -288,13 +299,11 @@
                 }
             }
 
-            // Pintar la frase activa en el lienzo de forma limpia y enfocada
             if (currentLyricText !== "") {
                 ctx.save();
                 ctx.textAlign = 'center';
                 ctx.font = 'italic 500 17px "Montserrat", sans-serif';
                 
-                // Resalta en rosa los estribillos/palabras clave, y el resto en blanco brillante
                 if(currentLyricText.includes("love like this") || currentLyricText.includes("Love like this") || currentLyricText.includes("divinity")) {
                     ctx.fillStyle = '#ff4081';
                     ctx.shadowColor = 'rgba(255, 64, 129, 0.5)'; ctx.shadowBlur = 8;
@@ -302,7 +311,6 @@
                     ctx.fillStyle = '#ffffff';
                 }
                 
-                // Imprime el renglón justo en la zona vacía sobre la pareja
                 ctx.fillText(currentLyricText, canvas.width / 2, 220);
                 ctx.restore();
             }
