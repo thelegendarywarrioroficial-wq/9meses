@@ -81,46 +81,71 @@
     let lastTime = 0;
     let currentLyricText = ""; 
 
-    // ================= TIMINGS EXACTOS CALIBRADOS CON EL VIDEO OFICIAL =================
+    // ================= MARCAS DE TIEMPO DEFINITIVAS Y CORREGIDAS =================
     const lyricsTimeline = [
-        { start: 27.0, end: 34.5, text: "Feeling, more than perfect, it's amazing" },
-        { start: 35.0, end: 40.5, text: "More than words can explain it" },
-        { start: 41.0, end: 45.5, text: "Purest form of reality, divinity" },
-        { start: 46.0, end: 49.0, text: "I've been suffering in this tiring" },
-        { start: 49.5, end: 52.5, text: "Crazy world like I'm drowning" },
-        { start: 53.0, end: 56.5, text: "There is no way to escape the thought" },
-        { start: 57.0, end: 60.5, text: "But finally, here I am" },
-        { start: 61.0, end: 66.0, text: "I'll never find another love like this, it's true" },
-        { start: 66.5, end: 71.0, text: "I'll never find another love like this" },
-        { start: 71.5, end: 76.5, text: "Baby, can you feel it too? Just like I do?" },
-        { start: 77.0, end: 81.5, text: "(This paradise we're going to)" },
-        { start: 82.0, end: 87.0, text: "I'll never find another love like this, I know" },
-        { start: 87.5, end: 92.0, text: "I'll never find another love like this" },
-        { start: 92.5, end: 97.5, text: "Baby, can I give it to you? Just like you do?" },
-        { start: 98.0, end: 104.0, text: "Then we'll share it too... Thank you" },
-        { start: 105.0, end: 110.5, text: "Wherever I go, I feel you" },
-        { start: 111.0, end: 117.0, text: "Now, I know that I'll never love like this" },
-        { start: 129.0, end: 133.0, text: "Sacred, sweet divine invitation" },
-        { start: 133.5, end: 137.5, text: "To heal the heart that's been breaking" },
-        { start: 138.0, end: 143.0, text: "And my soul has been crying out... Let me out" },
-        { start: 143.5, end: 146.0, text: "And I am, falling softly" },
-        { start: 146.5, end: 150.0, text: "Colliding, into your sweet silver lining" },
-        { start: 150.5, end: 154.0, text: "There's no way to escape forever" },
-        { start: 154.5, end: 158.0, text: "But finally, here we are" },
-        { start: 158.5, end: 163.5, text: "I'll never find another love like this, it's true" },
-        { start: 164.0, end: 168.5, text: "I'll never find another love like this" },
-        { start: 169.0, end: 174.0, text: "Baby, can you feel it too? Just like I do?" },
-        { start: 174.5, end: 179.0, text: "(This paradise we're going to)" },
-        { start: 179.5, end: 184.5, text: "I'll never find another love like this, I know" },
-        { start: 185.0, end: 189.5, text: "I'll never find another love like this" },
-        { start: 190.0, end: 195.0, text: "Baby, can I give it to you? Just like you do?" },
-        { start: 195.5, block: 202.0, text: "Better we share it too... Thank you" },
-        { start: 202.5, end: 208.0, text: "Wherever I go, I feel you" },
-        { start: 208.5, end: 215.0, text: "Now, I know that I'll never love like this" },
-        { start: 219.0, end: 223.5, text: "Never love like this..." },
-        { start: 224.0, end: 227.5, text: "Love like this..." },
-        { start: 228.0, end: 231.5, text: "Love like this..." },
-        { start: 232.0, end: 238.0, text: "Love like this ❤️" }
+        // VERSO 1
+        { start: 36.0, end: 38.0, text: "Feeling..." },
+        { start: 38.0, end: 41.0, text: "More than perfect, amazing." },
+        { start: 41.0, end: 45.0, text: "More than words can explain, it's..." },
+        { start: 45.0, end: 48.0, text: "Purest form of reality..." },
+        { start: 48.0, end: 49.0, text: "Divinity." },
+        
+        // VERSO 2
+        { start: 53.0, end: 55.0, text: "I've been..." },
+        { start: 55.0, end: 58.0, text: "Suffering in this tiring..." },
+        { start: 58.0, end: 101.0, text: "Crazy world like I'm drowning." },
+        { start: 101.0, end: 104.0, text: "There's no way to escape, I thought, but..." },
+        { start: 104.0, end: 107.0, text: "Finally, here I am." },
+        
+        // CORO 1
+        { start: 107.0, end: 111.0, text: "I'll never find another love like this, it's true." },
+        { start: 111.0, end: 115.0, text: "I'll never find another love like this." },
+        { start: 115.0, end: 119.0, text: "Baby, can you feel it too, just like I do?" },
+        { start: 119.0, end: 122.0, text: "(Who does paradise belong to?)" },
+        { start: 122.0, end: 126.0, text: "I'll never find another love like this, I know." },
+        { start: 126.0, end: 129.0, text: "I'll never find another love like this." },
+        { start: 129.0, end: 133.0, text: "Baby, can I give it to you? Just like you do?" },
+        { start: 133.0, end: 135.0, text: "Then we share it too." },
+        
+        // POST-CORO 1
+        { start: 135.0, end: 137.0, text: "Thank you." },
+        { start: 137.0, end: 140.0, text: "Wherever I go, I feel you." },
+        { start: 140.0, end: 143.0, text: "Now I know..." },
+        { start: 143.0, end: 147.0, text: "That I'll never love like this." },
+        
+        // VERSO 3
+        { start: 153.0, end: 155.0, text: "Sacred..." },
+        { start: 155.0, end: 158.0, text: "Sweet divine invitation..." },
+        { start: 158.0, end: 161.0, text: "To heal a heart that's been breaking." },
+        { start: 161.0, end: 164.0, text: "Mend a soul that's been crying out..." },
+        { start: 164.0, end: 166.0, text: "Let me out." },
+        
+        // VERSO 4
+        { start: 170.0, end: 172.0, text: "Now I am..." },
+        { start: 172.0, end: 175.0, text: "Falling softly, colliding..." },
+        { start: 175.0, end: 178.0, text: "Into your sweet silver lining." },
+        { start: 178.0, end: 181.0, text: "There's no way to escape from heaven..." },
+        { start: 181.0, end: 184.0, text: "Finally, here we are." },
+        
+        // CORO 2
+        { start: 184.0, end: 188.0, text: "I'll never find another love like this, it's true." },
+        { start: 188.0, end: 191.0, text: "I'll never find another love like this." },
+        { start: 191.0, end: 195.0, text: "Baby, can you feel it too, just like I do?" },
+        { start: 195.0, end: 198.0, text: "(Who does paradise belong to?)" },
+        { start: 198.0, end: 202.0, text: "I'll never find another love like this, I know." },
+        { start: 202.0, end: 205.0, text: "I'll never find another love like this." },
+        { start: 205.0, end: 209.0, text: "Baby, can I give it to you? Just like you do?" },
+        { start: 209.0, end: 212.0, text: "Then we share it too." },
+        
+        // POST-CORO 2
+        { start: 212.0, end: 214.0, text: "Thank you." },
+        { start: 214.0, end: 217.0, text: "Wherever I go, I feel you." },
+        { start: 217.0, end: 220.0, text: "Now I know..." },
+        { start: 220.0, end: 224.0, text: "That I'll never love like this." },
+        { start: 224.0, end: 227.0, text: "Never love like this." },
+        
+        // OUTRO (Bucle final)
+        { start: 227.0, end: 239.5, text: "Love like this... ❤️" }
     ];
 
     window.addEventListener('click', startExperience, { once: true });
@@ -134,13 +159,11 @@
         lastTime = performance.now();
         requestAnimationFrame(animate);
 
-        // SINCRONIZACIÓN CLAVE: En el video oficial la intro dura 27 segundos.
-        // Esperamos exactamente 27 segundos fijos con el cartel quieto, y cuando Fujii Kaze canta,
-        // la pantalla se desvanece y la pareja arranca su hermosa caminata de 32 segundos.
+        // Espera exactamente 36 segundos instrumentales correspondientes a la intro
         setTimeout(() => {
             introScreen.classList.add('fade-out'); 
             walkStarted = true; 
-        }, 27000); // 27000ms = 27 segundos exactos.
+        }, 36000); // 36 segundos
     }
 
     const groundY = 440;
@@ -222,7 +245,8 @@
         });
     }
 
-    // Delta Time calibrado a 32 segundos estables
+    // Delta Time calibrado para durar exactamente 32 segundos de caminata activa
+    // (Desde el segundo 36 hasta el segundo 68 de la canción)
     const speedPerSecond = 138.75; 
 
     function animate(timestamp) {
@@ -260,7 +284,7 @@
         if (finalPos > 410) {
             couple.draw(time, walkStarted);
         } else {
-            // DETENCIÓN FINAL AUTOMÁTICA AL FINAL DEL VIAJE
+            // DETENCIÓN FINAL EN EL SEGUNDO 32 DE CAMINATA (Segundo 68 de la canción)
             couple.x = 410;
             couple.draw(0, false); 
             
@@ -276,7 +300,7 @@
             ctx.fillText("✨ Felices 9 Meses ✨", canvas.width / 2, 110);
             ctx.restore();
 
-            // SENSOR DE SUBTÍTULOS AUTOMÁTICOS ASOCIADOS AL REPRODUCTOR
+            // LECTURA DINÁMICA DE SUBTÍTULOS POR TIEMPO REAL
             let currentTime = music.currentTime; 
             currentLyricText = ""; 
 
