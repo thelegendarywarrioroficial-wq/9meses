@@ -66,6 +66,7 @@
 
 <audio id="background-music" loop preload="auto">
     <source src="love.mp3" type="audio/mpeg">
+    <track id="lyrics-track" src="subtitulos.vtt" kind="captions" srclang="es" label="Letra" default>
 </audio>
 
 <script>
@@ -73,57 +74,16 @@
     const ctx = canvas.getContext('2d');
     const introScreen = document.getElementById('intro-screen');
     const music = document.getElementById('background-music');
+    const lyricsTrack = document.getElementById('lyrics-track');
 
     let animationStarted = false;
     let walkStarted = false;
     let globalX = 0; 
     let time = 0;
-    
-    // Variables para controlar el tiempo real (Delta Time)
     let lastTime = 0;
+    
+    // El texto activo se leerá directamente del reproductor
     let currentLyricText = ""; 
-
-    // ================= TIMINGS EXACTOS PARA FUJII KAZE =================
-    const lyricsTimeline = [
-        { time: 32.0, text: "Feeling, more than perfect, it's amazing" },
-        { time: 36.5, text: "More than words can explain it" },
-        { time: 41.0, text: "Purest form of reality, divinity" },
-        { time: 46.0, text: "I've been suffering in this tiring" },
-        { time: 49.5, text: "Crazy world like I'm drowning" },
-        { time: 53.0, text: "There is no way to escape the thought" },
-        { time: 57.0, text: "But finally, here I am" },
-        { time: 61.0, text: "I'll never find another love like this, it's true" },
-        { time: 66.5, text: "I'll never find another love like this" },
-        { time: 71.5, text: "Baby, can you feel it too? Just like I do?" },
-        { time: 77.0, text: "(This paradise we're going to)" },
-        { time: 82.0, text: "I'll never find another love like this, I know" },
-        { time: 87.5, text: "I'll never find another love like this" },
-        { time: 92.5, text: "Baby, can I give it to you? Just like you do?" },
-        { time: 98.0, text: "Then we'll share it too... Thank you" },
-        { time: 105.0, text: "Wherever I go, I feel you" },
-        { time: 111.0, text: "Now, I know that I'll never love like this" },
-        { time: 118.0, text: "Sacred, sweet divine invitation" },
-        { time: 123.5, text: "To heal the heart that's been breaking" },
-        { time: 128.0, text: "And my soul has been crying out... Let me out" },
-        { time: 133.5, text: "And I am, falling softly" },
-        { time: 136.5, text: "Colliding, into your sweet silver lining" },
-        { time: 140.5, text: "There's no way to escape forever" },
-        { time: 144.5, text: "But finally, here we are" },
-        { time: 148.5, text: "I'll never find another love like this, it's true" },
-        { time: 154.0, text: "I'll never find another love like this" },
-        { time: 159.0, text: "Baby, can you feel it too? Just like I do?" },
-        { time: 164.5, text: "(This paradise we're going to)" },
-        { time: 169.5, text: "I'll never find another love like this, I know" },
-        { time: 175.0, text: "I'll never find another love like this" },
-        { time: 180.0, text: "Baby, can I give it to you? Just like you do?" },
-        { time: 185.5, text: "Better we share it too... Thank you" },
-        { time: 192.5, text: "Wherever I go, I feel you" },
-        { time: 198.5, text: "Now, I know that I'll never love like this" },
-        { time: 206.0, text: "Never love like this..." },
-        { time: 210.0, text: "Love like this..." },
-        { time: 214.0, text: "Love like this..." },
-        { time: 218.0, text: "Love like this ❤️" }
-    ];
 
     window.addEventListener('click', startExperience, { once: true });
     window.addEventListener('touchstart', startExperience, { once: true });
@@ -133,7 +93,11 @@
         introScreen.innerHTML = "Así comenzó...";
         animationStarted = true;
         
-        // Captura el milisegundo exacto inicial antes de arrancar el loop
+        // Forzar a que la pista de subtítulos esté activa y escuchando
+        if (music.textTracks[0]) {
+            music.textTracks[0].mode = 'showing';
+        }
+
         lastTime = performance.now();
         requestAnimationFrame(animate);
 
@@ -142,6 +106,18 @@
             introScreen.classList.add('fade-out'); 
             walkStarted = true; 
         }, 4500); 
+    }
+
+    // Escucha de forma automática lo que el reproductor está leyendo en tiempo real
+    if (music.textTracks[0]) {
+        music.textTracks[0].oncuechange = function() {
+            let activeCue = this.activeCues[0];
+            if (activeCue) {
+                currentLyricText = activeCue.text;
+            } else {
+                currentLyricText = ""; // Vacío en puentes instrumentales
+            }
+        };
     }
 
     const groundY = 440;
@@ -223,23 +199,15 @@
         });
     }
 
-    // ================= MATEMÁTICAS BASADAS EN TIEMPO REAL (DELTA TIME) =================
-    // Distancia total del mapa: 4440 píxeles.
-    // Duración deseada exactísima: 32 segundos.
-    // Velocidad constante por segundo: 4440 / 32 = 138.75 píxeles por segundo real.
+    // Adaptado con Delta Time para pantallas rápidas de alta frecuencia
     const speedPerSecond = 138.75; 
 
     function animate(timestamp) {
         if (!animationStarted) return; 
 
-        // Calcular los milisegundos reales que pasaron entre este cuadro y el anterior
-        let dt = (timestamp - lastTime) / 1000; // Lo convertimos a fracciones de segundo
+        let dt = (timestamp - lastTime) / 1000; 
         lastTime = timestamp;
-
-        // Evitar saltos bruscos si cambias de pestaña
         if (dt > 0.1) dt = 0.1; 
-
-        // El contador "time" de animación interna se escala para mantener la física constante a 60 FPS virtuales
         time += dt * 60; 
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -249,7 +217,6 @@
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)'; ctx.lineWidth = 2;
         ctx.beginPath(); ctx.moveTo(0, groundY); ctx.lineTo(canvas.width, groundY); ctx.stroke();
 
-        // Mover el mapa usando la velocidad multiplicada por el tiempo real transcurrido
         if (walkStarted) {
             globalX += speedPerSecond * dt;
         }
@@ -270,7 +237,7 @@
         if (finalPos > 410) {
             couple.draw(time, walkStarted);
         } else {
-            // DETENCIÓN ABSOLUTA EXACTAMENTE EN EL SEGUNDO 32
+            // DETENCIÓN FINAL AUTOMÁTICA
             couple.x = 410;
             couple.draw(0, false); 
             
@@ -286,19 +253,7 @@
             ctx.fillText("✨ Felices 9 Meses ✨", canvas.width / 2, 110);
             ctx.restore();
 
-            // Sincronización impecable de subtítulos leyendo los segundos del reproductor de audio
-            let currentTime = music.currentTime; 
-            currentLyricText = ""; 
-
-            for (let i = 0; i < lyricsTimeline.length; i++) {
-                if (currentTime >= lyricsTimeline[i].time) {
-                    if (i === lyricsTimeline.length - 1 || currentTime < lyricsTimeline[i + 1].time) {
-                        currentLyricText = lyricsTimeline[i].text;
-                        break;
-                    }
-                }
-            }
-
+            // PINTAR EL SUBTÍTULO LEÍDO AUTOMÁTICAMENTE
             if (currentLyricText !== "") {
                 ctx.save();
                 ctx.textAlign = 'center';
