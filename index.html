@@ -31,26 +31,26 @@
             background: linear-gradient(to bottom, #0d0124 0%, #17022b 40%, #050010 100%);
         }
 
+        /* Pantalla de inicio que invita a interactuar */
         #intro-screen {
             position: absolute;
             width: 100%;
             text-align: center;
             color: white;
-            font-size: 2.8rem;
+            font-size: 2.5rem;
             font-weight: 300;
             letter-spacing: 4px;
             text-shadow: 0 0 15px rgba(255,255,255,0.5);
-            animation: fadeOutText 3.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-            pointer-events: none;
             top: 45%;
             z-index: 10;
+            cursor: pointer;
+            transition: all 0.5s ease;
         }
 
-        @keyframes fadeOutText {
-            0% { opacity: 0; transform: scale(0.95); }
-            15% { opacity: 1; transform: scale(1); }
-            80% { opacity: 1; }
-            100% { opacity: 0; transform: scale(1.05); display: none; }
+        .fade-out {
+            opacity: 0 !important;
+            transform: scale(1.05);
+            pointer-events: none;
         }
 
         audio {
@@ -61,7 +61,7 @@
 <body>
 
 <div id="canvasContainer">
-    <div id="intro-screen">Así comenzó...</div>
+    <div id="intro-screen">Toca la pantalla para comenzar...</div>
     <canvas id="gameCanvas" width="900" height="550"></canvas>
 </div>
 
@@ -72,26 +72,39 @@
 <script>
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
+    const introScreen = document.getElementById('intro-screen');
+    const music = document.getElementById('background-music');
 
-    // Forzar la reproducción con cualquier interacción en la pantalla
-    function playAudio() {
-        const music = document.getElementById('background-music');
-        music.play().then(() => {
-            console.log("Audio sonando perfectamente.");
-            // Una vez que suena, removemos los listeners para no saturar
-            window.removeEventListener('click', playAudio);
-            window.removeEventListener('touchstart', playAudio);
-        }).catch(e => console.log("Esperando clic fuerte..."));
-    }
-
-    // Detecta clics en computadora y toques en celulares
-    window.addEventListener('click', playAudio);
-    window.addEventListener('touchstart', playAudio);
-
-    const groundY = 440;
+    let animationStarted = false;
+    let walkStarted = false;
     let globalX = 0; 
     let time = 0;
     let lyricsY = 550; 
+
+    // Al dar clic, inicia la música de fondo inmediatamente con su intro
+    window.addEventListener('click', startExperience, { once: true });
+    window.addEventListener('touchstart', startExperience, { once: true });
+
+    function startExperience() {
+        // 1. Reproducir la música (suena la intro instrumental)
+        music.play().catch(e => console.log("Error de reproducción"));
+
+        // 2. Cambiar el texto a "Así comenzó..." de forma elegante
+        introScreen.innerHTML = "Así comenzó...";
+        
+        // 3. Encender el motor gráfico del Canvas (las estrellas ya se mueven de fondo)
+        animationStarted = true;
+        animate();
+
+        // 4. SINCRONIZACIÓN: Esperar exactamente el tiempo de la intro (aprox 4.5 segundos)
+        // para que cuando entre la voz, la pareja empiece a caminar y el texto se desvanezca.
+        setTimeout(() => {
+            introScreen.classList.add('fade-out'); // Desvanece el letrero
+            walkStarted = true; // Arranca el movimiento del escenario
+        }, 4500); // 4500 milisegundos = 4.5 segundos. Ajusta este número si la voz entra un poco antes o después.
+    }
+
+    const groundY = 440;
 
     const lyrics = [
         "Feeling, more than perfect, it's amazing",
@@ -153,139 +166,55 @@
     const couple = {
         x: 320, 
         y: groundY - 110,
-        draw: function(t) {
-            let bounceA = Math.sin(t * 0.08) * 3;
-            let bounceB = Math.sin(t * 0.08 + Math.PI) * 3;
+        draw: function(t, isWalking) {
+            // Si no ha empezado a caminar, el rebote es 0 (están parados de la mano esperando)
+            let bounceA = isWalking ? Math.sin(t * 0.08) * 3 : 0;
+            let bounceB = isWalking ? Math.sin(t * 0.08 + Math.PI) * 3 : 0;
             
             ctx.save();
             
             // ÉL
-            let ex = this.x;
-            let ey = this.y + bounceA;
-            ctx.fillStyle = '#121214';
-            ctx.beginPath(); ctx.arc(ex + 20, ey + 20, 16, Math.PI, 0); ctx.lineTo(ex + 38, ey + 32); ctx.lineTo(ex + 2, ey + 32); ctx.fill();
-            ctx.fillStyle = '#fcd0ba';
-            ctx.beginPath(); ctx.arc(ex + 20, ey + 26, 13, 0, Math.PI * 2); ctx.fill();
-            ctx.strokeStyle = '#222'; ctx.lineWidth = 2.5;
-            ctx.strokeRect(ex + 10, ey + 20, 9, 7); ctx.strokeRect(ex + 22, ey + 20, 9, 7);
-            ctx.beginPath(); ctx.moveTo(ex + 19, ey + 23); ctx.lineTo(ex + 22, ey + 23); ctx.stroke();
-            ctx.fillStyle = '#1c2d42'; 
-            ctx.beginPath(); ctx.roundRect(ex + 5, ey + 38, 30, 60, [10, 10, 0, 0]); ctx.fill();
+            let ex = this.x; let ey = this.y + bounceA;
+            ctx.fillStyle = '#121214'; ctx.beginPath(); ctx.arc(ex + 20, ey + 20, 16, Math.PI, 0); ctx.lineTo(ex + 38, ey + 32); ctx.lineTo(ex + 2, ey + 32); ctx.fill();
+            ctx.fillStyle = '#fcd0ba'; ctx.beginPath(); ctx.arc(ex + 20, ey + 26, 13, 0, Math.PI * 2); ctx.fill();
+            ctx.strokeStyle = '#222'; ctx.lineWidth = 2.5; ctx.strokeRect(ex + 10, ey + 20, 9, 7); ctx.strokeRect(ex + 22, ey + 20, 9, 7); ctx.beginPath(); ctx.moveTo(ex + 19, ey + 23); ctx.lineTo(ex + 22, ey + 23); ctx.stroke();
+            ctx.fillStyle = '#1c2d42'; ctx.beginPath(); ctx.roundRect(ex + 5, ey + 38, 30, 60, [10, 10, 0, 0]); ctx.fill();
             ctx.fillStyle = '#4fc3f7'; ctx.fillRect(ex + 8, ey + 38, 3, 60); ctx.fillRect(ex + 29, ey + 38, 3, 60);
             ctx.fillStyle = '#151518'; ctx.fillRect(ex + 8, ey + 98, 9, 15); ctx.fillRect(ex + 23, ey + 98, 9, 15);
 
             // ELLA
-            let ox = this.x + 55;
-            let oy = this.y + bounceB;
-            ctx.fillStyle = '#4a2f1b';
-            ctx.beginPath(); ctx.roundRect(ox + 2, oy + 8, 36, 65, 12); ctx.fill();
-            ctx.fillStyle = '#fde2d4';
-            ctx.beginPath(); ctx.arc(ox + 20, ey + 26, 13, 0, Math.PI * 2); ctx.fill();
-            ctx.strokeStyle = '#e5a93b'; ctx.lineWidth = 1.8;
-            ctx.beginPath(); ctx.arc(ox + 13, ey + 25, 5, 0, Math.PI*2); ctx.stroke();
-            ctx.beginPath(); ctx.arc(ox + 27, ey + 25, 5, 0, Math.PI*2); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(ox + 18, ey + 25); ctx.lineTo(ox + 22, ey + 25); ctx.stroke();
-            ctx.fillStyle = '#eadecc';
-            ctx.beginPath(); ctx.roundRect(ox + 4, oy + 38, 32, 60, [8, 8, 0, 0]); ctx.fill();
+            let ox = this.x + 55; let oy = this.y + bounceB;
+            ctx.fillStyle = '#4a2f1b'; ctx.beginPath(); ctx.roundRect(ox + 2, oy + 8, 36, 65, 12); ctx.fill();
+            ctx.fillStyle = '#fde2d4'; ctx.beginPath(); ctx.arc(ox + 20, ey + 26, 13, 0, Math.PI * 2); ctx.fill();
+            ctx.strokeStyle = '#e5a93b'; ctx.lineWidth = 1.8; ctx.beginPath(); ctx.arc(ox + 13, ey + 25, 5, 0, Math.PI*2); ctx.stroke(); ctx.beginPath(); ctx.arc(ox + 27, ey + 25, 5, 0, Math.PI*2); ctx.stroke(); ctx.beginPath(); ctx.moveTo(ox + 18, ey + 25); ctx.lineTo(ox + 22, ey + 25); ctx.stroke();
+            ctx.fillStyle = '#eadecc'; ctx.beginPath(); ctx.roundRect(ox + 4, oy + 38, 32, 60, [8, 8, 0, 0]); ctx.fill();
             ctx.fillStyle = '#ffffff'; ctx.fillRect(ox + 4, oy + 48, 32, 4); ctx.fillRect(ox + 4, oy + 62, 32, 4); ctx.fillRect(ox + 4, oy + 76, 32, 4);
             ctx.fillStyle = '#222'; ctx.fillRect(ox + 8, oy + 98, 8, 15); ctx.fillRect(ox + 24, oy + 98, 8, 15);
 
             // MANOS AGARRADAS
-            ctx.strokeStyle = '#1c2d42'; ctx.lineWidth = 6; ctx.lineCap = 'round';
-            ctx.beginPath(); ctx.moveTo(ex + 30, ey + 60); ctx.lineTo(ex + 45, ey + 75); ctx.stroke();
-            ctx.strokeStyle = '#eadecc'; ctx.lineWidth = 6;
-            ctx.beginPath(); ctx.moveTo(ox + 8, oy + 60); ctx.lineTo(ox - 2, oy + 75); ctx.stroke();
-            ctx.fillStyle = '#fcd0ba';
-            ctx.beginPath(); ctx.arc(ex + 41, ((ey + oy)/2) + 74, 5, 0, Math.PI*2); ctx.fill();
+            ctx.strokeStyle = '#1c2d42'; ctx.lineWidth = 6; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(ex + 30, ey + 60); ctx.lineTo(ex + 45, ey + 75); ctx.stroke();
+            ctx.strokeStyle = '#eadecc'; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(ox + 8, oy + 60); ctx.lineTo(ox - 2, oy + 75); ctx.stroke();
+            ctx.fillStyle = '#fcd0ba'; ctx.beginPath(); ctx.arc(ex + 41, ((ey + oy)/2) + 74, 5, 0, Math.PI*2); ctx.fill();
 
             ctx.restore();
         }
     };
 
-    // --- RECUERDOS ---
+    // --- RECUERDOS (MISMAS FUNCIONES MEJORADAS) ---
     function drawChat(x, y) {
-        ctx.save();
-        ctx.shadowColor = 'rgba(29, 161, 242, 0.2)'; ctx.shadowBlur = 10;
-        ctx.fillStyle = '#ffffff';
-        ctx.beginPath(); ctx.roundRect(x, y, 180, 110, 12); ctx.fill();
-        ctx.fillStyle = '#1da1f2';
-        ctx.beginPath(); ctx.roundRect(x, y, 180, 25, [12, 12, 0, 0]); ctx.fill();
-        ctx.shadowBlur = 0;
-        ctx.fillStyle = '#e3f2fd'; ctx.beginPath(); ctx.roundRect(x + 12, y + 38, 100, 26, 8); ctx.fill();
-        ctx.fillStyle = '#f5f5f5'; ctx.beginPath(); ctx.roundRect(x + 68, y + 72, 100, 26, 8); ctx.fill();
-        ctx.fillStyle = '#0d47a1'; ctx.font = '12px sans-serif'; ctx.fillText("¡Hola! 😊", x + 20, y + 55);
-        ctx.fillStyle = '#333333'; ctx.font = '12px sans-serif'; ctx.fillText("¡Holaaa! ✨", x + 76, y + 89);
-        ctx.restore();
+        ctx.save(); ctx.shadowColor = 'rgba(29, 161, 242, 0.2)'; ctx.shadowBlur = 10; ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.roundRect(x, y, 180, 110, 12); ctx.fill(); ctx.fillStyle = '#1da1f2'; ctx.beginPath(); ctx.roundRect(x, y, 180, 25, [12, 12, 0, 0]); ctx.fill(); ctx.shadowBlur = 0; ctx.fillStyle = '#e3f2fd'; ctx.beginPath(); ctx.roundRect(x + 12, y + 38, 100, 26, 8); ctx.fill(); ctx.fillStyle = '#f5f5f5'; ctx.beginPath(); ctx.roundRect(x + 68, y + 72, 100, 26, 8); ctx.fill(); ctx.fillStyle = '#0d47a1'; ctx.font = '12px sans-serif'; ctx.fillText("¡Hola! 😊", x + 20, y + 55); ctx.fillStyle = '#333333'; ctx.font = '12px sans-serif'; ctx.fillText("¡Holaaa! ✨", x + 76, y + 89); ctx.restore();
     }
-
     function drawMcDonalds(x, y) {
-        ctx.save();
-        ctx.fillStyle = '#8d0c0c'; 
-        ctx.beginPath(); ctx.roundRect(x, y, 180, 130, [10, 10, 0, 0]); ctx.fill();
-        ctx.fillStyle = 'rgba(20,20,30,0.8)'; ctx.fillRect(x + 45, y + 60, 90, 70);
-        ctx.strokeStyle = '#ffcc00'; ctx.lineWidth = 7; ctx.lineCap = 'round';
-        ctx.beginPath(); ctx.moveTo(x + 65, y + 45); ctx.bezierCurveTo(x + 73, y + 15, x + 85, y + 15, x + 90, y + 45); ctx.bezierCurveTo(x + 95, y + 15, x + 107, y + 15, x + 115, y + 45); ctx.stroke();
-        ctx.restore();
+        ctx.save(); ctx.fillStyle = '#8d0c0c'; ctx.beginPath(); ctx.roundRect(x, y, 180, 130, [10, 10, 0, 0]); ctx.fill(); ctx.fillStyle = 'rgba(20,20,30,0.8)'; ctx.fillRect(x + 45, y + 60, 90, 70); ctx.strokeStyle = '#ffcc00'; ctx.lineWidth = 7; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(x + 65, y + 45); ctx.bezierCurveTo(x + 73, y + 15, x + 85, y + 15, x + 90, y + 45); ctx.bezierCurveTo(x + 95, y + 15, x + 107, y + 15, x + 115, y + 45); ctx.stroke(); ctx.restore();
     }
-
     function drawChimuelo(x, y, t) {
-        ctx.save();
-        let floatY = Math.sin(t * 0.06) * 8;
-        let cy = y - 10 + floatY;
-        const dragonColor = '#1a1c23'; const dragonShadow = '#0f1015';
-
-        ctx.fillStyle = dragonShadow;
-        ctx.beginPath(); ctx.moveTo(x + 25, cy + 35); ctx.bezierCurveTo(x - 20, cy, x - 10, cy + 40, x + 20, cy + 50); ctx.fill();
-        ctx.beginPath(); ctx.moveTo(x + 45, cy + 35); ctx.bezierCurveTo(x + 90, cy, x + 80, cy + 40, x + 50, cy + 50); ctx.fill();
-
-        ctx.fillStyle = dragonColor;
-        ctx.beginPath(); ctx.ellipse(x + 35, cy + 45, 20, 25, 0, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = dragonShadow;
-        ctx.beginPath(); ctx.ellipse(x + 23, cy + 65, 6, 12, 0, 0, Math.PI*2); ctx.fill();
-        ctx.beginPath(); ctx.ellipse(x + 47, cy + 65, 6, 12, 0, 0, Math.PI*2); ctx.fill();
-
-        ctx.fillStyle = dragonColor;
-        ctx.beginPath(); ctx.moveTo(x + 15, cy + 10); ctx.bezierCurveTo(x - 15, cy - 25, x - 5, cy - 15, x + 22, cy); ctx.fill();
-        ctx.beginPath(); ctx.moveTo(x + 55, cy + 10); ctx.bezierCurveTo(x + 85, cy - 25, x + 75, cy - 15, x + 48, cy); ctx.fill();
-        ctx.beginPath(); ctx.moveTo(x + 10, cy + 18); ctx.lineTo(x - 5, cy + 12); ctx.lineTo(x + 12, cy + 24); ctx.moveTo(x + 60, cy + 18); ctx.lineTo(x + 75, cy + 12); ctx.lineTo(x + 58, cy + 24); ctx.fill();
-
-        ctx.beginPath(); ctx.ellipse(x + 35, cy + 18, 28, 20, 0, 0, Math.PI * 2); ctx.fill();
-
-        ctx.fillStyle = '#a6ff00';
-        ctx.save(); ctx.translate(x + 21, cy + 16); ctx.rotate(-Math.PI / 10); ctx.beginPath(); ctx.ellipse(0, 0, 9, 12, 0, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = '#0a0d10'; ctx.beginPath(); ctx.ellipse(0, 0, 2.5, 11, 0, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(-3, -4, 2, 0, Math.PI * 2); ctx.fill(); ctx.restore();
-        ctx.save(); ctx.translate(x + 49, cy + 16); ctx.rotate(Math.PI / 10); ctx.fillStyle = '#a6ff00'; ctx.beginPath(); ctx.ellipse(0, 0, 9, 12, 0, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = '#0a0d10'; ctx.beginPath(); ctx.ellipse(0, 0, 2.5, 11, 0, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(-3, -4, 2, 0, Math.PI * 2); ctx.fill(); ctx.restore();
-
-        ctx.strokeStyle = dragonShadow; ctx.lineWidth = 2; ctx.lineCap = 'round'; ctx.beginPath(); ctx.arc(x + 35, cy + 24, 8, 0.1, Math.PI - 0.1); ctx.stroke();
-        ctx.restore();
+        ctx.save(); let floatY = Math.sin(t * 0.06) * 8; let cy = y - 10 + floatY; const dragonColor = '#1a1c23'; const dragonShadow = '#0f1015'; ctx.fillStyle = dragonShadow; ctx.beginPath(); ctx.moveTo(x + 25, cy + 35); ctx.bezierCurveTo(x - 20, cy, x - 10, cy + 40, x + 20, cy + 50); ctx.fill(); ctx.beginPath(); ctx.moveTo(x + 45, cy + 35); ctx.bezierCurveTo(x + 90, cy, x + 80, cy + 40, x + 50, cy + 50); ctx.fill(); ctx.fillStyle = dragonColor; ctx.beginPath(); ctx.ellipse(x + 35, cy + 45, 20, 25, 0, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = dragonShadow; ctx.beginPath(); ctx.ellipse(x + 23, cy + 65, 6, 12, 0, 0, Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.ellipse(x + 47, cy + 65, 6, 12, 0, 0, Math.PI*2); ctx.fill(); ctx.fillStyle = dragonColor; ctx.beginPath(); ctx.moveTo(x + 15, cy + 10); ctx.bezierCurveTo(x - 15, cy - 25, x - 5, cy - 15, x + 22, cy); ctx.fill(); ctx.beginPath(); ctx.moveTo(x + 55, cy + 10); ctx.bezierCurveTo(x + 85, cy - 25, x + 75, cy - 15, x + 48, cy); ctx.fill(); ctx.beginPath(); ctx.moveTo(x + 10, cy + 18); ctx.lineTo(x - 5, cy + 12); ctx.lineTo(x + 12, cy + 24); ctx.moveTo(x + 60, cy + 18); ctx.lineTo(x + 75, cy + 12); ctx.lineTo(x + 58, cy + 24); ctx.fill(); ctx.beginPath(); ctx.ellipse(x + 35, cy + 18, 28, 20, 0, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = '#a6ff00'; ctx.save(); ctx.translate(x + 21, cy + 16); ctx.rotate(-Math.PI / 10); ctx.beginPath(); ctx.ellipse(0, 0, 9, 12, 0, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = '#0a0d10'; ctx.beginPath(); ctx.ellipse(0, 0, 2.5, 11, 0, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(-3, -4, 2, 0, Math.PI * 2); ctx.fill(); ctx.restore(); ctx.save(); ctx.translate(x + 49, cy + 16); ctx.rotate(Math.PI / 10); ctx.fillStyle = '#a6ff00'; ctx.beginPath(); ctx.ellipse(0, 0, 9, 12, 0, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = '#0a0d10'; ctx.beginPath(); ctx.ellipse(0, 0, 2.5, 11, 0, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(-3, -4, 2, 0, Math.PI * 2); ctx.fill(); ctx.restore(); ctx.strokeStyle = dragonShadow; ctx.lineWidth = 2; ctx.lineCap = 'round'; ctx.beginPath(); ctx.arc(x + 35, cy + 24, 8, 0.1, Math.PI - 0.1); ctx.stroke(); ctx.restore();
     }
-
     function drawGerberas(x, y) {
-        ctx.save();
-        const colors = ['#e91e63', '#ffeb3b', '#ff5722', '#ff85a2'];
-        for(let i = 0; i < 4; i++) {
-            let gx = x + (i * 42);
-            let gy = y + (i % 2 * 18);
-            ctx.strokeStyle = '#2e7d32'; ctx.lineWidth = 3.5;
-            ctx.beginPath(); ctx.moveTo(gx, gy); ctx.quadraticCurveTo(gx - 5, gy + 30, gx, gy + 75); ctx.stroke();
-            ctx.fillStyle = colors[i];
-            for(let j = 0; j < 12; j++) {
-                ctx.beginPath(); ctx.ellipse(gx, gy, 6, 18, (j * Math.PI) / 6, 0, Math.PI * 2); ctx.fill();
-            }
-            ctx.fillStyle = '#4e342e'; ctx.beginPath(); ctx.arc(gx, gy, 8, 0, Math.PI*2); ctx.fill();
-        }
-        ctx.restore();
+        ctx.save(); const colors = ['#e91e63', '#ffeb3b', '#ff5722', '#ff85a2']; for(let i = 0; i < 4; i++) { let gx = x + (i * 42); let gy = y + (i % 2 * 18); ctx.strokeStyle = '#2e7d32'; ctx.lineWidth = 3.5; ctx.beginPath(); ctx.moveTo(gx, gy); ctx.quadraticCurveTo(gx - 5, gy + 30, gx, gy + 75); ctx.stroke(); ctx.fillStyle = colors[i]; for(let j = 0; j < 12; j++) { ctx.beginPath(); ctx.ellipse(gx, gy, 6, 18, (j * Math.PI) / 6, 0, Math.PI * 2); ctx.fill(); } ctx.fillStyle = '#4e342e'; ctx.beginPath(); ctx.arc(gx, gy, 8, 0, Math.PI*2); ctx.fill(); } ctx.restore();
     }
-
     function drawCar(x, y) {
-        ctx.save();
-        ctx.fillStyle = '#1565c0'; ctx.beginPath(); ctx.roundRect(x, y, 130, 40, 8); ctx.fill(); 
-        ctx.fillStyle = '#64b5f6'; ctx.beginPath(); ctx.roundRect(x + 25, y - 22, 75, 25, [15, 15, 0, 0]); ctx.fill(); 
-        ctx.fillStyle = '#212121'; ctx.beginPath(); ctx.arc(x + 30, y + 38, 14, 0, Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.arc(x + 100, y + 38, 14, 0, Math.PI*2); ctx.fill();
-        ctx.fillStyle = '#cfd8dc'; ctx.beginPath(); ctx.arc(x + 30, y + 38, 6, 0, Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.arc(x + 100, y + 38, 6, 0, Math.PI*2); ctx.fill();
-        ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.roundRect(x + 35, y - 60, 60, 24, 4); ctx.fill();
-        ctx.strokeStyle = '#e91e63'; ctx.lineWidth = 2; ctx.strokeRect(x + 35, y - 60, 60, 24);
-        ctx.fillStyle = '#e91e63'; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'center'; ctx.fillText("CDMX 📍", x + 65, y - 44);
-        ctx.restore();
+        ctx.save(); ctx.fillStyle = '#1565c0'; ctx.beginPath(); ctx.roundRect(x, y, 130, 40, 8); ctx.fill(); ctx.fillStyle = '#64b5f6'; ctx.beginPath(); ctx.roundRect(x + 25, y - 22, 75, 25, [15, 15, 0, 0]); ctx.fill(); ctx.fillStyle = '#212121'; ctx.beginPath(); ctx.arc(x + 30, y + 38, 14, 0, Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.arc(x + 100, y + 38, 14, 0, Math.PI*2); ctx.fill(); ctx.fillStyle = '#cfd8dc'; ctx.beginPath(); ctx.arc(x + 30, y + 38, 6, 0, Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.arc(x + 100, y + 38, 6, 0, Math.PI*2); ctx.fill(); ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.roundRect(x + 35, y - 60, 60, 24, 4); ctx.fill(); ctx.strokeStyle = '#e91e63'; ctx.lineWidth = 2; ctx.strokeRect(x + 35, y - 60, 60, 24); ctx.fillStyle = '#e91e63'; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'center'; ctx.fillText("CDMX 📍", x + 65, y - 44); ctx.restore();
     }
 
     // --- FONDO ---
@@ -316,10 +245,12 @@
         });
     }
 
-    // --- ANIMACIÓN ---
+    // --- VELOCIDAD PARA DURAR EXACTAMENTE 32 SEGUNDOS ---
     const speed = 2.3125; 
 
     function animate() {
+        if (!animationStarted) return; // No dibuja nada hasta interactuar
+        
         time++;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -329,7 +260,10 @@
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)'; ctx.lineWidth = 2;
         ctx.beginPath(); ctx.moveTo(0, groundY); ctx.lineTo(canvas.width, groundY); ctx.stroke();
 
-        globalX += speed;
+        // Solo avanza la pantalla si ya terminó la intro musical
+        if (walkStarted) {
+            globalX += speed;
+        }
 
         let chatPos = 950 - globalX;
         let mcPos = 1800 - globalX;
@@ -345,10 +279,11 @@
         if(carPos > -250 && carPos < 950) drawCar(carPos, groundY - 40);
 
         if (finalPos > 410) {
-            couple.draw(time);
+            couple.draw(time, walkStarted); // Pasa si están caminando o quietos
         } else {
+            // Fin de los 32 segundos de caminata
             couple.x = 410;
-            couple.draw(0); 
+            couple.draw(0, false); 
             
             let heartScale = 1 + Math.sin(time * 0.1) * 0.08;
             ctx.save(); ctx.translate(457, groundY - 130); ctx.scale(heartScale, heartScale);
@@ -392,8 +327,6 @@
 
         requestAnimationFrame(animate);
     }
-
-    animate();
 
 </script>
 </body>
