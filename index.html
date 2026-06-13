@@ -65,23 +65,28 @@
     <canvas id="gameCanvas" width="900" height="550"></canvas>
 </div>
 
-<audio id="background-music" loop>
-    <source src="Fujii Kaze - Love Like This (Official Music Video).mp3" type="audio/mpeg">
+<audio id="background-music" loop preload="auto">
+    <source src="love.mp3" type="audio/mpeg">
 </audio>
 
 <script>
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
 
-    // Activa la música con el primer clic en cualquier parte de la pantalla
-    document.body.addEventListener('click', () => {
+    // Forzar la reproducción con cualquier interacción en la pantalla
+    function playAudio() {
         const music = document.getElementById('background-music');
         music.play().then(() => {
-            console.log("Reproduciendo con éxito");
-        }).catch(e => {
-            console.log("Error al reproducir: Revisa que el archivo esté suelto en GitHub junto al index.html");
-        });
-    }, { once: true });
+            console.log("Audio sonando perfectamente.");
+            // Una vez que suena, removemos los listeners para no saturar
+            window.removeEventListener('click', playAudio);
+            window.removeEventListener('touchstart', playAudio);
+        }).catch(e => console.log("Esperando clic fuerte..."));
+    }
+
+    // Detecta clics en computadora y toques en celulares
+    window.addEventListener('click', playAudio);
+    window.addEventListener('touchstart', playAudio);
 
     const groundY = 440;
     let globalX = 0; 
